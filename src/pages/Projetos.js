@@ -347,7 +347,7 @@ const Projetos = () => {
 
                 <div className="project-card">
                   <img 
-                    src={selectedProjeto.capaUrl ? `http://localhost:2216/projetos/${selectedProjeto.id}/capa` : defaultImage} 
+                    src={selectedProjeto.capaUrl ? `https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}/capa` : defaultImage} 
                     alt="Capa do Projeto" 
                   />
                   <h1>{selectedProjeto.titulo}</h1>
@@ -374,7 +374,7 @@ const Projetos = () => {
                       <div key={projeto.id} className="projects-item" onClick={() => handleProjetoClick(projeto)}>
 
 <img 
-                          src={projeto.capaUrl ? `http://localhost:2216/projetos/${projeto.id}/capa` : defaultImage} 
+                          src={projeto.capaUrl ? `https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${projeto.id}/capa` : defaultImage} 
                           alt="Capa do Projeto" 
                           className="project-image"
                         />
@@ -398,7 +398,7 @@ const Projetos = () => {
                         
                         
                         <img 
-                          src={projeto.capaUrl ? `http://localhost:2216/projetos/${projeto.id}/capa` : defaultImage} 
+                          src={projeto.capaUrl ? `https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${projeto.id}/capa` : defaultImage} 
                           alt="Capa do Projeto" 
                           className="project-image"
                         />
