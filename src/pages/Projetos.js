@@ -28,7 +28,7 @@ const Projetos = () => {
 
   const fetchProjetos = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:2216/users/${userId}`);
+      const response = await fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/users/${userId}`);
       if (response.ok) {
         const data = await response.json();
         setProjetosCriados(data.projetosCriados || []);
@@ -43,21 +43,21 @@ const Projetos = () => {
 
   useEffect(() => {
     if (selectedProjeto) {
-      fetch(`http://localhost:2216/projetos/${selectedProjeto.id}/pedidosParticipacao`)
+      fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}/pedidosParticipacao`)
         .then(response => response.json())
         .then(ids => {
-          Promise.all(ids.map(id => fetch(`http://localhost:2216/users/${id}`).then(res => res.json())))
+          Promise.all(ids.map(id => fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/users/${id}`).then(res => res.json())))
             .then(users => setSolicitacoes(users));
         });
 
       if (selectedProjeto.chatId) {
-        fetch(`http://localhost:2216/chat/${selectedProjeto.chatId}/messages`)
+        fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}/messages`)
           .then(response => response.json())
           .then(data => setMensagens(data));
       }
 
       if (selectedProjeto.approvedParticipants && selectedProjeto.approvedParticipants.length > 0) {
-        Promise.all(selectedProjeto.approvedParticipants.map(id => fetch(`http://localhost:2216/users/${id}`).then(res => res.json())))
+        Promise.all(selectedProjeto.approvedParticipants.map(id => fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/users/${id}`).then(res => res.json())))
           .then(users => setParticipantesAprovados(users));
       } else {
         setParticipantesAprovados([]);
@@ -69,7 +69,7 @@ const Projetos = () => {
     let interval;
     if (activeTab === 'canal' && selectedProjeto) {
       interval = setInterval(() => {
-        fetch(`http://localhost:2216/chat/${selectedProjeto.chatId}/messages`)
+        fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}/messages`)
           .then(response => response.json())
           .then(data => setMensagens(data));
       }, 1000);
@@ -100,7 +100,7 @@ const Projetos = () => {
 
   const handleAprovar = (userId) => {
     if (selectedProjeto && user) {
-      fetch(`http://localhost:2216/projetos/${selectedProjeto.id}/aprovarUsuario`, {
+      fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}/aprovarUsuario`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ const Projetos = () => {
 
   const handleNegar = (userId) => {
     if (selectedProjeto && user) {
-      fetch(`http://localhost:2216/projetos/${selectedProjeto.id}/negarSolicitacao/${userId}`, {
+      fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}/negarSolicitacao/${userId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -144,7 +144,7 @@ const Projetos = () => {
     if (!selectedProjeto || !user) return;
   
     try {
-      const response = await fetch(`http://localhost:2216/projetos/${selectedProjeto.id}`, {
+      const response = await fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -169,7 +169,7 @@ const Projetos = () => {
     if (!selectedProjeto || !user) return;
   
     try {
-      const response = await fetch(`http://localhost:2216/projetos/${selectedProjeto.id}`, {
+      const response = await fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -196,7 +196,7 @@ const Projetos = () => {
     console.log('Enviando mensagem:', novaMensagem);
   
     try {
-      const response = await fetch(`http://localhost:2216/chat/${selectedProjeto.chatId}`, {
+      const response = await fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -213,7 +213,7 @@ const Projetos = () => {
       if (response.ok) {
         console.log('Mensagem enviada com sucesso');
         setNovaMensagem(''); // Limpar o campo de entrada
-        fetch(`http://localhost:2216/chat/${selectedProjeto.chatId}/messages`)
+        fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}/messages`)
           .then(response => response.json())
           .then(data => setMensagens(data)); // Atualizar as mensagens
       } else {

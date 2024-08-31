@@ -10,7 +10,7 @@ const Projeto = () => {
   useEffect(() => {
     const fetchProjetos = async () => {
       try {
-        const response = await axios.get('http://localhost:2216/projetos');
+        const response = await axios.get(' https://backend-conecta-09de4578e9de.herokuapp.com/projetos');
         setProjetos(response.data);
       } catch (err) {
         setError(err);
@@ -30,7 +30,7 @@ const Projeto = () => {
       {projetos.map(projeto => (
         <div key={projeto.id} style={{ border: '1px solid #ccc', padding: '16px', margin: '16px 0' }}>
           <img 
-            src={projeto.capaUrl ? `http://localhost:2216/projetos/${projeto.id}/capa` : defaultImage} 
+            src={projeto.capaUrl ? ` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${projeto.id}/capa` : defaultImage} 
             alt="Capa do Projeto" 
             style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px' }} 
           />

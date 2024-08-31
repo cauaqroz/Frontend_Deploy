@@ -43,11 +43,8 @@ const Sidebar = ({ activeTab }) => {
       <div className="general-section">
         <h5>General</h5>
         <ul>
-          <li className={currentTab === '/configuracoes' ? 'active' : ''}>
-            <Link to="/configuracoes" onClick={() => setCurrentTab('/configuracoes')}>Setting</Link>
-          </li>
           <li className={currentTab === '/account' ? 'active' : ''}>
-            <Link to="/account" onClick={() => setCurrentTab('/account')}>Account</Link>
+            <Link to="/account" onClick={() => setCurrentTab('/account')}>Setting</Link>
           </li>
         </ul>
       </div>

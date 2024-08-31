@@ -25,12 +25,12 @@ const DetalhesProjeto = () => {
 
     const fetchProjeto = async () => {
       try {
-        const response = await axios.get(`http://localhost:2216/projetos/${id}`);
+        const response = await axios.get(` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${id}`);
         setProjeto(response.data);
 
         if (response.data.approvedParticipants) {
           const participantesPromises = response.data.approvedParticipants.map(async (participanteId) => {
-            const participanteResponse = await axios.get(`http://localhost:2216/users/${participanteId}`);
+            const participanteResponse = await axios.get(` https://backend-conecta-09de4578e9de.herokuapp.com/users/${participanteId}`);
             return participanteResponse.data;
           });
 
@@ -61,7 +61,7 @@ const DetalhesProjeto = () => {
 
   const handleRequestParticipation = async () => {
     try {
-      const response = await axios.post(`http://localhost:2216/projetos/${id}/solicitarParticipacao`, {}, {
+      const response = await axios.post(` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${id}/solicitarParticipacao`, {}, {
         headers: {
           'userId': userId
         }
@@ -87,7 +87,7 @@ const DetalhesProjeto = () => {
         <Header onLogout={handleLogout} />
         <div className="project-card">
           <img 
-            src={projeto.capaUrl ? `http://localhost:2216/projetos/${projeto.id}/capa` : defaultImage} 
+            src={projeto.capaUrl ? ` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${projeto.id}/capa` : defaultImage} 
             alt="Capa do Projeto" 
           />
           <h1>{projeto.titulo}</h1>

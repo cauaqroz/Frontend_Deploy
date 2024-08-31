@@ -13,8 +13,6 @@ const Header = ({ onLogout, onSearchChange, onSearchFocus }) => {
     '/detalhes-projeto': 'Detalhes do Projeto'
   };
 
-  
-
   // Obtenha o título da página atual
   const pageTitle = pageTitles[location.pathname] || 'Página';
 
@@ -29,9 +27,14 @@ const Header = ({ onLogout, onSearchChange, onSearchFocus }) => {
           onChange={onSearchChange} // Adicione o evento onChange
           onFocus={onSearchFocus} // Adicione o evento onFocus
         />
+        <button className="notification-button">
+          <span className="material-symbols-outlined">notifications</span>
+        </button>
+        <div className="profile-circle"></div>
         <button onClick={onLogout} className="logout-button">
           <span className="material-symbols-outlined">logout</span>
         </button>
+        
       </div>
     </div>
   );

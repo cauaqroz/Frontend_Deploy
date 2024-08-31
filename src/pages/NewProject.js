@@ -37,7 +37,7 @@ const NewProject = () => {
       }
 
       // Lógica para enviar os dados do projeto para o backend
-      const response = await fetch('http://localhost:2216/projetos', {
+      const response = await fetch(' https://backend-conecta-09de4578e9de.herokuapp.com/projetos', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ const NewProject = () => {
         const formData = new FormData();
         formData.append('file', projectData.image);
 
-        await fetch(`http://localhost:2216/projetos/${projectId}/uploadCapa`, {
+        await fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${projectId}/uploadCapa`, {
           method: 'POST',
           body: formData,
         });

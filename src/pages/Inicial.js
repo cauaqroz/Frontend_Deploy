@@ -36,7 +36,7 @@ const Inicial = () => {
   useEffect(() => {
     const fetchProjetos = async () => {
       try {
-        const response = await axios.get('http://localhost:2216/projetos');
+        const response = await axios.get(' https://backend-conecta-09de4578e9de.herokuapp.com/projetos');
         setProjetos(response.data);
       } catch (err) {
         setError(err);
@@ -59,7 +59,7 @@ const Inicial = () => {
 
     if (isSearchActive && term) {
       try {
-        const response = await axios.get(`http://localhost:2216/projetos/buscarProjetos?titulo=${term}`);
+        const response = await axios.get(` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/buscarProjetos?titulo=${term}`);
         setSearchResults(response.data);
       } catch (err) {
         setError(err);
@@ -96,7 +96,7 @@ const Inicial = () => {
           <div style={{ paddingTop: '60px' }}>
             {projetosToDisplay.map(projeto => (
               <div key={projeto.id} className="card" onClick={() => handleProjetoClick(projeto.id)}>
-                <img src={projeto.capaUrl ? `http://localhost:2216/projetos/${projeto.id}/capa` : defaultImage} alt="Capa do Projeto" />
+                <img src={projeto.capaUrl ? ` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${projeto.id}/capa` : defaultImage} alt="Capa do Projeto" />
                 <h1>{projeto.titulo}</h1>
                 <p><strong>Descrição:</strong> {projeto.descricao}</p>
                 <p><strong>Tecnologia:</strong> {projeto.tecnologia}</p>

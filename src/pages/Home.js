@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css'; // Importe o CSS
+import exampleImage from '../assets/homeImg.jpeg'; // Importe a imagem
 
 const Home = () => {
   const navigate = useNavigate();
@@ -15,10 +16,26 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <h1>Bem-vindo à nossa plataforma de freelancer</h1>
-      <p>Aqui você pode encontrar os melhores freelancers para o seu projeto.</p>
-      <button onClick={navigateToRegister}>Cadastro</button>
-      <button onClick={navigateToLogin}>Login</button>
+      <div className="top-bar">
+        <div className="logo">Conecta +</div>
+        <div className="header-buttons">
+          <button onClick={navigateToLogin}>Login</button>
+          <button onClick={navigateToRegister}>Cadastro</button>
+        </div>
+      </div>
+      <main className="home-main">
+        <div className="text-container">
+          <h1 className="main-title">ConectaPlus</h1>
+          <h2 className="main-subtitle">Conecte-se a Projetos Incríveis!</h2>
+          <p className="main-description">
+            Uma nova plataforma, que busca trazer sempre o melhor de seus profissionais, buscando sempre o próximo desafio e criando oportunidades, bem-vindo a <strong>Conecta</strong> a mais nova plataforma para freelancer.
+          </p>
+          <button className="get-started-button" onClick={navigateToRegister}>Vamos Começar</button>
+        </div>
+        <div className="image-home">
+          <img src={exampleImage} alt="Imagem de exemplo" />
+        </div>
+      </main>
     </div>
   );
 };
