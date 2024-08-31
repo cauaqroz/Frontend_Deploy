@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ProjetosContext } from '../context/ProjetosContext';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import defaultImage from '../assets/baixados.png'; // Importe a imagem
@@ -8,11 +9,9 @@ import '../styles/Inicial.css'; // Importe o CSS
 
 const Inicial = () => {
   const navigate = useNavigate();
+  const { projetos, loading, error } = useContext(ProjetosContext);
   const [user, setUser] = useState(null);
   const [freelancer, setFreelancer] = useState(null);
-  const [projetos, setProjetos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -31,27 +30,6 @@ const Inicial = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const fetchProjetos = async () => {
-      try {
-        const response = await axios.get('https://backend-conecta-09de4578e9de.herokuapp.com/projetos');
-        setProjetos(response.data);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjetos();
-
-    // Fazer requisições periódicas para atualizar os dados
-    const intervalId = setInterval(fetchProjetos, 60000); // Atualiza a cada 60 segundos
-
-    // Limpar o intervalo quando o componente for desmontado
-    return () => clearInterval(intervalId);
-  }, []);
-
   const handleLogout = () => {
     sessionStorage.clear();
     navigate('/login');
@@ -66,7 +44,7 @@ const Inicial = () => {
         const response = await axios.get(`https://backend-conecta-09de4578e9de.herokuapp.com/projetos/buscarProjetos?titulo=${term}`);
         setSearchResults(response.data);
       } catch (err) {
-        setError(err);
+        console.error('Erro ao buscar projetos:', err);
       }
     } else {
       setSearchResults([]);
@@ -114,11 +92,11 @@ const Inicial = () => {
               <h2>Simular Valor do Freelancer</h2>
               <div>
                 <label>Horas Trabalhadas:</label>
-                <input type="number" value={hours} onChange={(e) => setHours(e.target.value)} />
+                <input type="number" value={hours} onChange={(e) => setHours(Number(e.target.value))} />
               </div>
               <div>
                 <label>Taxa por Hora:</label>
-                <input type="number" value={rate} onChange={(e) => setRate(e.target.value)} />
+                <input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} />
               </div>
               <button onClick={handleCalculate}>Calcular</button>
               <p>Total: {total}</p>
@@ -128,11 +106,11 @@ const Inicial = () => {
               <h2>Calcular Custo do Projeto</h2>
               <div>
                 <label>Horas Trabalhadas:</label>
-                <input type="number" value={hours} onChange={(e) => setHours(e.target.value)} />
+                <input type="number" value={hours} onChange={(e) => setHours(Number(e.target.value))} />
               </div>
               <div>
                 <label>Taxa por Hora:</label>
-                <input type="number" value={rate} onChange={(e) => setRate(e.target.value)} />
+                <input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} />
               </div>
               <button onClick={handleCalculate}>Calcular</button>
               <p>Total: {total}</p>

@@ -2,6 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
+import { ProjetosProvider } from './context/ProjetosContext';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Projeto from './components/Projeto';
@@ -14,6 +15,7 @@ import Account from './pages/Account';
 
 const App = () => {
   return (
+    <ProjetosProvider>
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
@@ -30,6 +32,7 @@ const App = () => {
         <Route path="/newproject" element={<NewProject />} />
       </Routes>
     </Router>
+    </ProjetosProvider>
   );
 };
 
