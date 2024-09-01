@@ -1,3 +1,4 @@
+// src/context/ProjetosUsuarioContext.js
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -34,8 +35,12 @@ export const ProjetosUsuarioProvider = ({ children }) => {
     return () => clearInterval(intervalId);
   }, []);
 
+  const addProjetoCriado = (novoProjeto) => {
+    setProjetosCriados((prevProjetos) => [...prevProjetos, novoProjeto]);
+  };
+
   return (
-    <ProjetosUsuarioContext.Provider value={{ projetosCriados, projetosParticipando, loading, error }}>
+    <ProjetosUsuarioContext.Provider value={{ projetosCriados, projetosParticipando, loading, error, addProjetoCriado }}>
       {children}
     </ProjetosUsuarioContext.Provider>
   );

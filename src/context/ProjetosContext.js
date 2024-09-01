@@ -1,3 +1,4 @@
+// src/context/ProjetosContext.js
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -29,8 +30,20 @@ export const ProjetosProvider = ({ children }) => {
     return () => clearInterval(intervalId);
   }, []);
 
+  const addProjeto = (novoProjeto) => {
+    setProjetos((prevProjetos) => [...prevProjetos, novoProjeto]);
+  };
+
+  const updateProjeto = (projetoAtualizado) => {
+    setProjetos((prevProjetos) =>
+      prevProjetos.map((projeto) =>
+        projeto.id === projetoAtualizado.id ? projetoAtualizado : projeto
+      )
+    );
+  };
+
   return (
-    <ProjetosContext.Provider value={{ projetos, loading, error }}>
+    <ProjetosContext.Provider value={{ projetos, loading, error, addProjeto, updateProjeto }}>
       {children}
     </ProjetosContext.Provider>
   );
