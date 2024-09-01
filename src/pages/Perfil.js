@@ -1,15 +1,12 @@
-// src/pages/Perfil.js
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
-import { ProjetosContext } from '../context/ProjetosContext';
-import '../styles/Perfil.css';
+import '../styles/Perfil.css'; // Importe o CSS
 
 const Perfil = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { projetos } = useContext(ProjetosContext);
   const [user, setUser] = useState(null);
   const [freelancer, setFreelancer] = useState(null);
   const [hours, setHours] = useState(0);
@@ -41,9 +38,6 @@ const Perfil = () => {
   };
 
   if (!user) return <p>Carregando...</p>;
-
-  const projetosCriados = projetos.filter(projeto => projeto.ownerId === user.id);
-  const projetosParticipando = projetos.filter(projeto => projeto.participants.includes(user.id));
 
   return (
     <div style={{ display: 'flex' }}>
@@ -109,7 +103,7 @@ const Perfil = () => {
           <div className="projetos-card">
             <h2>{freelancer ? 'Projetos Participando' : 'Projetos Criados'}</h2>
             <ul>
-              {(freelancer ? projetosParticipando : projetosCriados).map(projeto => (
+              {(freelancer ? user.projetosParticipando : user.projetosCriados).map(projeto => (
                 <li key={projeto.id} className="projeto-item" onClick={() => handleProjetoClick(projeto.id)}>
                   <div className="projeto-card">
                     <p><strong>{projeto.titulo}</strong> </p>

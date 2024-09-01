@@ -1,15 +1,12 @@
-// src/pages/NewProject.js
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import Loading from '../components/Loading'; // Importe o componente de tela de carregamento
-import { ProjetosUsuarioContext } from '../context/ProjetosUsuarioContext';
 import '../styles/NewProject.css'; // Importe o CSS para estilizar a página
 
 const NewProject = () => {
   const navigate = useNavigate();
-  const { addProjetoCriado } = useContext(ProjetosUsuarioContext);
   const [projectData, setProjectData] = useState({
     title: '',
     description: '',
@@ -40,7 +37,7 @@ const NewProject = () => {
       }
 
       // Lógica para enviar os dados do projeto para o backend
-      const response = await fetch('https://backend-conecta-09de4578e9de.herokuapp.com/projetos', {
+      const response = await fetch(' https://backend-conecta-09de4578e9de.herokuapp.com/projetos', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,13 +57,12 @@ const NewProject = () => {
         const formData = new FormData();
         formData.append('file', projectData.image);
 
-        await fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${projectId}/uploadCapa`, {
+        await fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${projectId}/uploadCapa`, {
           method: 'POST',
           body: formData,
         });
       }
 
-      addProjetoCriado(project); // Adicione o novo projeto ao contexto
       setLoading(false); // Ocultar tela de carregamento
       navigate('/projetos'); // Redireciona para a página de projetos após a criação
     } catch (error) {
