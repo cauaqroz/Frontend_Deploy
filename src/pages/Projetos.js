@@ -1,63 +1,49 @@
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar'; // Ajuste o caminho conforme necessário
-import Header from '../components/Header';   // Ajuste o caminho conforme necessário
+import { ProjetosUsuarioContext } from '../context/ProjetosUsuarioContext';
+import Sidebar from '../components/Sidebar';
+import Header from '../components/Header';
 import defaultImage from '../assets/baixados.png'; // Importe a imagem
-import '../styles/Projetos.css'; // Importe o CSS exclusivo para a página de projetos
-import { useState, useEffect, useRef } from 'react';
+import '../styles/Projetos.css'; // Importe o CSS
+
 const Projetos = () => {
+  const navigate = useNavigate();
+
+  const { projetosCriados, projetosParticipando, loading, error } = useContext(ProjetosUsuarioContext);
   const [user, setUser] = useState(null);
-  const [projetosCriados, setProjetosCriados] = useState([]);
-  const [projetosParticipando, setProjetosParticipando] = useState([]);
+
   const [selectedProjeto, setSelectedProjeto] = useState(null);
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [mensagens, setMensagens] = useState([]);
-  const [novaMensagem, setNovaMensagem] = useState(''); // Novo estado para a nova mensagem
+  const [novaMensagem, setNovaMensagem] = useState('');
   const [activeTab, setActiveTab] = useState('informacoes');
-  const [shouldScroll, setShouldScroll] = useState(true); // Estado para controlar a rolagem automática
-  const [participantesAprovados, setParticipantesAprovados] = useState([]); // Novo estado para participantes aprovados
-  const navigate = useNavigate();
-  const mensagensEndRef = useRef(null); // Referência para o final da lista de mensagens
+  const [shouldScroll, setShouldScroll] = useState(true);
+  
+  const [participantesAprovados, setParticipantesAprovados] = useState([]);
+  
+  const mensagensEndRef = useRef(null);
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem('user'));
     if (userData) {
-      setUser(userData);
-      fetchProjetos(userData.id);
-    }
-  }, []);
-
-  const fetchProjetos = async (userId) => {
-    try {
-      const response = await fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/users/${userId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setProjetosCriados(data.projetosCriados || []);
-        setProjetosParticipando(data.projetosParticipando || []);
-      } else {
-        console.error('Erro ao buscar projetos do usuário');
-      }
-    } catch (error) {
-      console.error('Erro ao buscar projetos do usuário:', error);
-    }
-  };
-
-  useEffect(() => {
+      setUser(userData);};
+  }, []); useEffect(() => {
     if (selectedProjeto) {
-      fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}/pedidosParticipacao`)
+      fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}/pedidosParticipacao`)
         .then(response => response.json())
         .then(ids => {
-          Promise.all(ids.map(id => fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/users/${id}`).then(res => res.json())))
+          Promise.all(ids.map(id => fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/users/${id}`).then(res => res.json())))
             .then(users => setSolicitacoes(users));
         });
 
       if (selectedProjeto.chatId) {
-        fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}/messages`)
+        fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}/messages`)
           .then(response => response.json())
           .then(data => setMensagens(data));
       }
 
       if (selectedProjeto.approvedParticipants && selectedProjeto.approvedParticipants.length > 0) {
-        Promise.all(selectedProjeto.approvedParticipants.map(id => fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/users/${id}`).then(res => res.json())))
+        Promise.all(selectedProjeto.approvedParticipants.map(id => fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/users/${id}`).then(res => res.json())))
           .then(users => setParticipantesAprovados(users));
       } else {
         setParticipantesAprovados([]);
@@ -69,7 +55,7 @@ const Projetos = () => {
     let interval;
     if (activeTab === 'canal' && selectedProjeto) {
       interval = setInterval(() => {
-        fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}/messages`)
+        fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}/messages`)
           .then(response => response.json())
           .then(data => setMensagens(data));
       }, 1000);
@@ -80,18 +66,16 @@ const Projetos = () => {
   useEffect(() => {
     if (activeTab === 'canal' && shouldScroll && mensagensEndRef.current) {
       mensagensEndRef.current.scrollIntoView({ behavior: 'smooth' });
-      setShouldScroll(false); // Desativar a rolagem automática após a primeira rolagem
+      setShouldScroll(false);
     }
-  }, [activeTab, mensagens, shouldScroll]);
-
-  const handleLogout = () => {
+  }, [activeTab, mensagens, shouldScroll]);const handleLogout = () => {
     sessionStorage.clear();
     navigate('/login');
   };
 
   const handleProjetoClick = (projeto) => {
     setSelectedProjeto(projeto);
-    setShouldScroll(true); // Ativar a rolagem automática ao selecionar um novo projeto
+    setShouldScroll(true);
   };
 
   const handleBackToMenu = () => {
@@ -100,7 +84,7 @@ const Projetos = () => {
 
   const handleAprovar = (userId) => {
     if (selectedProjeto && user) {
-      fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}/aprovarUsuario`, {
+      fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}/aprovarUsuario`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -121,7 +105,7 @@ const Projetos = () => {
 
   const handleNegar = (userId) => {
     if (selectedProjeto && user) {
-      fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}/negarSolicitacao/${userId}`, {
+      fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}/negarSolicitacao/${userId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -137,22 +121,19 @@ const Projetos = () => {
       })
       .catch(error => console.error('Erro ao negar solicitação:', error));
     }
-  };
-  
-
-  const handleUpdateProjeto = async (updatedProjeto) => {
+  };const handleUpdateProjeto = async (updatedProjeto) => {
     if (!selectedProjeto || !user) return;
-  
+
     try {
-      const response = await fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}`, {
+      const response = await fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'ownerId': user.id // substitua seu-owner-id pelo ID do proprietário do projeto
+          'ownerId': user.id
         },
         body: JSON.stringify(updatedProjeto)
       });
-  
+
       if (response.ok) {
         const updatedData = await response.json();
         setSelectedProjeto(updatedData);
@@ -167,21 +148,19 @@ const Projetos = () => {
 
   const handleDeleteProjeto = async () => {
     if (!selectedProjeto || !user) return;
-  
+
     try {
-      const response = await fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}`, {
+      const response = await fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
           'ownerId': user.id
         }
       });
-  
+
       if (response.ok) {
         console.log('Projeto deletado com sucesso');
-        // Atualizar a lista de projetos após a exclusão
-        fetchProjetos(user.id);
-        setSelectedProjeto(null); // Voltar ao menu de projetos
+        setSelectedProjeto(null);
       } else {
         console.error('Erro ao deletar projeto');
       }
@@ -191,12 +170,8 @@ const Projetos = () => {
   };
 
   const enviarMensagem = async () => {
-    if (novaMensagem.trim() === '') return;
-  
-    console.log('Enviando mensagem:', novaMensagem);
-  
-    try {
-      const response = await fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}`, {
+    if (novaMensagem.trim() === '') return;try {
+      const response = await fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -205,38 +180,26 @@ const Projetos = () => {
           content: novaMensagem,
           sender: user.id
         })
-      });
-  
-      const responseData = await response.json();
-      console.log('Resposta do servidor:', responseData);
-  
-      if (response.ok) {
-        console.log('Mensagem enviada com sucesso');
-        setNovaMensagem(''); // Limpar o campo de entrada
-        fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}/messages`)
+      });if (response.ok) {
+        setNovaMensagem('');
+        fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}/messages`)
           .then(response => response.json())
-          .then(data => setMensagens(data)); // Atualizar as mensagens
+          .then(data => setMensagens(data));
       } else {
         console.error('Erro ao enviar mensagem:', response.statusText);
       }
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
-    }
-  };
-
+    }};
   const renderTabContent = () => {
     switch (activeTab) {
       case 'informacoes':
         return (
           <>
             <h2>{selectedProjeto.titulo}</h2>
-            <p>{selectedProjeto.descricao}</p>
-            <p><strong>Tecnologia:</strong> {selectedProjeto.tecnologia}</p>
-            {/* Adicione mais detalhes do projeto conforme necessário */}
+            <p>{selectedProjeto.descricao}</p><p><strong>Tecnologia:</strong> {selectedProjeto.tecnologia}</p>
             <div className="arquivos">
-              <h3>Arquivos</h3>
-              {/* Conteúdo dos arquivos */}
-            </div>
+              <h3>Arquivos</h3></div>
           </>
         );
       case 'solicitacoes':
@@ -296,40 +259,43 @@ const Projetos = () => {
             </div>
           </div>
         );
-        case 'configuracoes':
-  return (
-    <div>
-      <h2>Configurações do Projeto</h2>
-      <form onSubmit={async (e) => {
-        e.preventDefault();
-        const updatedProjeto = {
-          titulo: e.target.titulo.value,
-          descricao: e.target.descricao.value,
-          tecnologia: e.target.tecnologia.value
-        };
-        handleUpdateProjeto(updatedProjeto);
-      }}>
-        <div>
-          <label>Título:</label>
-          <input type="text" name="titulo" defaultValue={selectedProjeto.titulo} />
-        </div>
-        <div>
-          <label>Descrição:</label>
-          <textarea name="descricao" defaultValue={selectedProjeto.descricao}></textarea>
-        </div>
-        <div>
-          <label>Tecnologia:</label>
-          <input type="text" name="tecnologia" defaultValue={selectedProjeto.tecnologia} />
-        </div>
-        <button type="submit">Atualizar Projeto</button>
-      </form>
-      <button onClick={handleDeleteProjeto} style={{ marginTop: '20px', color: 'red' }}>Deletar Projeto</button>
-    </div>
-  );
+      case 'configuracoes':
+        return (
+          <div>
+            <h2>Configurações do Projeto</h2>
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const updatedProjeto = {
+                titulo: e.target.titulo.value,
+                descricao: e.target.descricao.value,
+                tecnologia: e.target.tecnologia.value
+              };
+              handleUpdateProjeto(updatedProjeto);
+            }}>
+              <div>
+                <label>Título:</label>
+                <input type="text" name="titulo" defaultValue={selectedProjeto.titulo} />
+              </div>
+              <div>
+                <label>Descrição:</label>
+                <textarea name="descricao" defaultValue={selectedProjeto.descricao}></textarea>
+              </div>
+              <div>
+                <label>Tecnologia:</label>
+                <input type="text" name="tecnologia" defaultValue={selectedProjeto.tecnologia} />
+              </div>
+              <button type="submit">Atualizar Projeto</button>
+            </form>
+            <button onClick={handleDeleteProjeto} style={{ marginTop: '20px', color: 'red' }}>Deletar Projeto</button>
+          </div>
+        );
       default:
         return null;
     }
   };
+
+  if (loading) return <p>Carregando projetos...</p>;
+  if (error) return <p>Erro ao carregar os projetos: {error.message}</p>;
 
   return (
     <div className="projects-page">
@@ -341,19 +307,13 @@ const Projetos = () => {
             {selectedProjeto ? (
               <div className="projects-detalhes full-screen">
                 <span className="material-symbols-outlined close-icon" onClick={handleBackToMenu} style={{ cursor: 'pointer' }}>
-                  close
-                </span>
-
-
+                  close</span>
                 <div className="project-card">
                   <img 
                     src={selectedProjeto.capaUrl ? `https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}/capa` : defaultImage} 
                     alt="Capa do Projeto" 
                   />
-                  <h1>{selectedProjeto.titulo}</h1>
-                </div>
-                
-
+                  <h1>{selectedProjeto.titulo}</h1></div>
                 <div className="tabs">
                   <button onClick={() => setActiveTab('informacoes')} className={activeTab === 'informacoes' ? 'active' : ''}>Informações</button>
                   <button onClick={() => setActiveTab('solicitacoes')} className={activeTab === 'solicitacoes' ? 'active' : ''}>Solicitações</button>
@@ -372,14 +332,10 @@ const Projetos = () => {
                   {projetosCriados.length > 0 ? (
                     projetosCriados.map(projeto => (
                       <div key={projeto.id} className="projects-item" onClick={() => handleProjetoClick(projeto)}>
-
-<img 
+                        <img 
                           src={projeto.capaUrl ? `https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${projeto.id}/capa` : defaultImage} 
                           alt="Capa do Projeto" 
-                          className="project-image"
-                        />
-
-
+                          className="project-image"/>
                         <h2>{projeto.titulo}</h2>
                         <p>{projeto.descricao}</p>
                         <p><strong>Tecnologia:</strong> {projeto.tecnologia}</p>
@@ -394,16 +350,11 @@ const Projetos = () => {
                 <div className="projects-grid">
                   {projetosParticipando.length > 0 ? (
                     projetosParticipando.map(projeto => (
-                      <div key={projeto.id} className="projects-item" onClick={() => handleProjetoClick(projeto)}>
-                        
-                        
-                        <img 
-                          src={projeto.capaUrl ? `https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${projeto.id}/capa` : defaultImage} 
+                      <div key={projeto.id} className="projects-item" onClick={() => handleProjetoClick(projeto)}> 
+                        <img src={projeto.capaUrl ? `https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${projeto.id}/capa` : defaultImage} 
                           alt="Capa do Projeto" 
-                          className="project-image"
-                        />
-
-
+                          className="project-image"/>
+          
                         <h2>{projeto.titulo}</h2>
                         <p>{projeto.descricao}</p>
                         <p><strong>Tecnologia:</strong> {projeto.tecnologia}</p>
