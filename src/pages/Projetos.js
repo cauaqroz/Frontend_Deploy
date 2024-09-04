@@ -1,15 +1,14 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ProjetosUsuarioContext } from '../context/ProjetosUsuarioContext';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import defaultImage from '../assets/baixados.png';
 import '../styles/Projetos.css';
+import { useState, useEffect, useRef } from 'react';
 
 const Projetos = () => {
-  const navigate = useNavigate();
-  const { projetosCriados, projetosParticipando, loading, error } = useContext(ProjetosUsuarioContext);
   const [user, setUser] = useState(null);
+  const [projetosCriados, setProjetosCriados] = useState([]);
+  const [projetosParticipando, setProjetosParticipando] = useState([]);
   const [selectedProjeto, setSelectedProjeto] = useState(null);
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [mensagens, setMensagens] = useState([]);
@@ -17,32 +16,49 @@ const Projetos = () => {
   const [activeTab, setActiveTab] = useState('informacoes');
   const [shouldScroll, setShouldScroll] = useState(true);
   const [participantesAprovados, setParticipantesAprovados] = useState([]);
+  const navigate = useNavigate();
   const mensagensEndRef = useRef(null);
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem('user'));
     if (userData) {
       setUser(userData);
+      fetchProjetos(userData.id);
     }
   }, []);
 
+  const fetchProjetos = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:2216/users/${userId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setProjetosCriados(data.projetosCriados || []);
+        setProjetosParticipando(data.projetosParticipando || []);
+      } else {
+        console.error('Erro ao buscar projetos do usuário');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar projetos do usuário:', error);
+    }
+  };
+
   useEffect(() => {
     if (selectedProjeto) {
-      fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}/pedidosParticipacao`)
+      fetch(`http://localhost:2216/projetos/${selectedProjeto.id}/pedidosParticipacao`)
         .then(response => response.json())
         .then(ids => {
-          Promise.all(ids.map(id => fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/users/${id}`).then(res => res.json())))
+          Promise.all(ids.map(id => fetch(`http://localhost:2216/users/${id}`).then(res => res.json())))
             .then(users => setSolicitacoes(users));
         });
 
       if (selectedProjeto.chatId) {
-        fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}/messages`)
+        fetch(`http://localhost:2216/chat/${selectedProjeto.chatId}/messages`)
           .then(response => response.json())
           .then(data => setMensagens(data));
       }
 
       if (selectedProjeto.approvedParticipants && selectedProjeto.approvedParticipants.length > 0) {
-        Promise.all(selectedProjeto.approvedParticipants.map(id => fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/users/${id}`).then(res => res.json())))
+        Promise.all(selectedProjeto.approvedParticipants.map(id => fetch(`http://localhost:2216/users/${id}`).then(res => res.json())))
           .then(users => setParticipantesAprovados(users));
       } else {
         setParticipantesAprovados([]);
@@ -54,7 +70,7 @@ const Projetos = () => {
     let interval;
     if (activeTab === 'canal' && selectedProjeto) {
       interval = setInterval(() => {
-        fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}/messages`)
+        fetch(`http://localhost:2216/chat/${selectedProjeto.chatId}/messages`)
           .then(response => response.json())
           .then(data => setMensagens(data));
       }, 1000);
@@ -85,7 +101,7 @@ const Projetos = () => {
 
   const handleAprovar = (userId) => {
     if (selectedProjeto && user) {
-      fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}/aprovarUsuario`, {
+      fetch(`http://localhost:2216/projetos/${selectedProjeto.id}/aprovarUsuario`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,10 +111,9 @@ const Projetos = () => {
       })
       .then(response => {
         if (response.ok) {
-          // Atualize a lista de solicitações
-          setSolicitacoes(solicitacoes.filter(solicitacao => solicitacao.id !== userId));
+          setSolicitacoes(solicitacoes.filter(user => user.id !== userId));
         } else {
-          console.error('Erro ao aprovar solicitação:', response.statusText);
+          console.error('Erro ao aprovar solicitação');
         }
       })
       .catch(error => console.error('Erro ao aprovar solicitação:', error));
@@ -107,7 +122,7 @@ const Projetos = () => {
 
   const handleNegar = (userId) => {
     if (selectedProjeto && user) {
-      fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}/negarSolicitacao/${userId}`, {
+      fetch(`http://localhost:2216/projetos/${selectedProjeto.id}/negarSolicitacao/${userId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -116,10 +131,9 @@ const Projetos = () => {
       })
       .then(response => {
         if (response.ok) {
-          // Atualize a lista de solicitações
-          setSolicitacoes(solicitacoes.filter(solicitacao => solicitacao.id !== userId));
+          setSolicitacoes(solicitacoes.filter(user => user.id !== userId));
         } else {
-          console.error('Erro ao negar solicitação:', response.statusText);
+          console.error('Erro ao negar solicitação');
         }
       })
       .catch(error => console.error('Erro ao negar solicitação:', error));
@@ -130,7 +144,7 @@ const Projetos = () => {
     if (!selectedProjeto || !user) return;
 
     try {
-      const response = await fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}`, {
+      const response = await fetch(`http://localhost:2216/projetos/${selectedProjeto.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -155,7 +169,7 @@ const Projetos = () => {
     if (!selectedProjeto || !user) return;
 
     try {
-      const response = await fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}`, {
+      const response = await fetch(`http://localhost:2216/projetos/${selectedProjeto.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -165,6 +179,7 @@ const Projetos = () => {
 
       if (response.ok) {
         console.log('Projeto deletado com sucesso');
+        fetchProjetos(user.id);
         setSelectedProjeto(null);
       } else {
         console.error('Erro ao deletar projeto');
@@ -176,8 +191,11 @@ const Projetos = () => {
 
   const enviarMensagem = async () => {
     if (novaMensagem.trim() === '') return;
+
+    console.log('Enviando mensagem:', novaMensagem);
+
     try {
-      const response = await fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}`, {
+      const response = await fetch(`http://localhost:2216/chat/${selectedProjeto.chatId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -187,9 +205,14 @@ const Projetos = () => {
           sender: user.id
         })
       });
+
+      const responseData = await response.json();
+      console.log('Resposta do servidor:', responseData);
+
       if (response.ok) {
+        console.log('Mensagem enviada com sucesso');
         setNovaMensagem('');
-        fetch(`https://backend-conecta-09de4578e9de.herokuapp.com/chat/${selectedProjeto.chatId}/messages`)
+        fetch(`http://localhost:2216/chat/${selectedProjeto.chatId}/messages`)
           .then(response => response.json())
           .then(data => setMensagens(data));
       } else {
@@ -203,57 +226,101 @@ const Projetos = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'informacoes':
-        return <div>Informações do Projeto</div>;
+        return (
+          <>
+            <h2>{selectedProjeto.titulo}</h2>
+            <p>{selectedProjeto.descricao}</p>
+            <p><strong>Tecnologia:</strong> {selectedProjeto.tecnologia}</p>
+            <div className="arquivos">
+              <h3>Arquivos</h3>
+            </div>
+          </>
+        );
       case 'solicitacoes':
         return (
-          <div>
-            <h3>Solicitações de Participação</h3>
-            {solicitacoes.map(solicitacao => (
-              <div key={solicitacao.id}>
-                <p>{solicitacao.nome}</p>
-                <button onClick={() => handleAprovar(solicitacao.id)}>Aprovar</button>
-                <button onClick={() => handleNegar(solicitacao.id)}>Negar</button>
-              </div>
-            ))}
+          <div className="solicitacoes-card">
+            <h3>Lista de Solicitações</h3>
+            {solicitacoes.length > 0 ? (
+              solicitacoes.map(user => (
+                <div key={user.id} className="solicitacao-item">
+                  <p>{user.name} {user.lastName}</p>
+                  <button onClick={() => handleAprovar(user.id)}>Aprovar</button>
+                  <button onClick={() => handleNegar(user.id)}>Negar</button>
+                </div>
+              ))
+            ) : (
+              <p>Nenhuma solicitação encontrada.</p>
+            )}
           </div>
         );
       case 'participantes':
         return (
-          <div>
-            <h3>Participantes Aprovados</h3>
-            {participantesAprovados.map(participante => (
-              <div key={participante.id}>
-                <p>{participante.nome}</p>
-              </div>
-            ))}
+          <div className="participantes-card">
+            <h3>Lista de Participantes</h3>
+            {participantesAprovados.length > 0 ? (
+              participantesAprovados.map(user => (
+                <div key={user.id} className="participante-item">
+                  <p>{user.name} {user.lastName}</p>
+                </div>
+              ))
+            ) : (
+              <p>Nenhum participante encontrado.</p>
+            )}
           </div>
         );
       case 'canal':
         return (
-          <div>
-            <h3>Canal de Mensagens</h3>
+          <div className="canal-card">
+            <h3>Canal de Comunicação</h3>
             <div className="mensagens">
-              {mensagens.map((mensagem, index) => (
-                <div key={index}>
+              {mensagens.map(mensagem => (
+                <div key={mensagem.createdDate} className={`mensagem ${mensagem.sender === user.id ? 'mensagem-direita' : 'mensagem-esquerda'}`}>
+                  {mensagem.sender !== user.id && <p><strong>{mensagem.senderName}</strong></p>}
                   <p>{mensagem.content}</p>
+                  <span>{new Date(mensagem.createdDate).toLocaleString()}</span>
                 </div>
               ))}
               <div ref={mensagensEndRef} />
             </div>
-            <input
-              type="text"
-              value={novaMensagem}
-              onChange={(e) => setNovaMensagem(e.target.value)}
-              placeholder="Digite sua mensagem"
-            />
-            <button onClick={enviarMensagem}>Enviar</button>
+            <div className="nova-mensagem">
+              <input
+                type="text"
+                value={novaMensagem}
+                onChange={(e) => setNovaMensagem(e.target.value)}
+                placeholder="Digite sua mensagem"
+              />
+              <button onClick={enviarMensagem}>Enviar</button>
+            </div>
           </div>
         );
       case 'configuracoes':
         return (
           <div>
-            <h3>Configurações do Projeto</h3>
-            <button onClick={handleDeleteProjeto}>Deletar Projeto</button>
+            <h2>Configurações do Projeto</h2>
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const updatedProjeto = {
+                titulo: e.target.titulo.value,
+                descricao: e.target.descricao.value,
+                tecnologia: e.target.tecnologia.value
+              };
+              handleUpdateProjeto(updatedProjeto);
+            }}>
+              <div>
+                <label>Título:</label>
+                <input type="text" name="titulo" defaultValue={selectedProjeto.titulo} />
+              </div>
+              <div>
+                <label>Descrição:</label>
+                <textarea name="descricao" defaultValue={selectedProjeto.descricao}></textarea>
+              </div>
+              <div>
+                <label>Tecnologia:</label>
+                <input type="text" name="tecnologia" defaultValue={selectedProjeto.tecnologia} />
+              </div>
+              <button type="submit">Atualizar Projeto</button>
+            </form>
+            <button onClick={handleDeleteProjeto} style={{ marginTop: '20px', color: 'red' }}>Deletar Projeto</button>
           </div>
         );
       default:
@@ -265,7 +332,7 @@ const Projetos = () => {
     <div className="projects-page">
       <Sidebar activeTab="/projetos" />
       <div className="container-projects">
-        <Header onLogout={handleLogout} />
+        <Header onLogout={handleLogout} selectedProjeto={selectedProjeto} />
         <div className="projects-content">
           <div className="projects-feed">
             {selectedProjeto ? (
@@ -274,9 +341,9 @@ const Projetos = () => {
                   close
                 </span>
                 <div className="project-card">
-                  <img
-                    src={selectedProjeto.capaUrl ? `https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${selectedProjeto.id}/capa` : defaultImage}
-                    alt="Capa do Projeto"
+                  <img 
+                    src={selectedProjeto.capaUrl ? `http://localhost:2216/projetos/${selectedProjeto.id}/capa` : defaultImage} 
+                    alt="Capa do Projeto" 
                   />
                   <h1>{selectedProjeto.titulo}</h1>
                 </div>
@@ -294,52 +361,46 @@ const Projetos = () => {
             ) : (
               <>
                 <h2>Seus Projetos</h2>
-                {loading ? (
-                  <p>Carregando projetos...</p>
-                ) : (
-                  <div className="projects-grid">
-                    {projetosCriados.length > 0 ? (
-                      projetosCriados.map(projeto => (
-                        <div key={projeto.id} className="projects-item" onClick={() => handleProjetoClick(projeto)}>
-                          <img
-                            src={projeto.capaUrl ? `https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${projeto.id}/capa` : defaultImage}
-                            alt="Capa do Projeto"
-                            className="project-image"
-                          />
-                          <h2>{projeto.titulo}</h2>
-                          <p>{projeto.descricao}</p>
-                          <p><strong>Tecnologia:</strong> {projeto.tecnologia}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <p>Nenhum projeto encontrado.</p>
-                    )}
-                  </div>
-                )}
-                <br />
+                <div className="projects-grid">
+                  {projetosCriados.length > 0 ? (
+                    projetosCriados.map(projeto => (
+                      <div key={projeto.id} className="projects-item" onClick={() => handleProjetoClick(projeto)}>
+                        <img 
+                          src={projeto.capaUrl ? `http://localhost:2216/projetos/${projeto.id}/capa` : defaultImage} 
+                          alt="Capa do Projeto" 
+                          className="project-image"
+                          onError={(e) => { e.target.onerror = null; e.target.src = defaultImage; }} // Adiciona fallback para imagem padrão
+                        />
+                        <h2>{projeto.titulo}</h2>
+                        <p>{projeto.descricao}</p>
+                        <p><strong>Tecnologia:</strong> {projeto.tecnologia}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p>Nenhum projeto encontrado.</p>
+                  )}
+                </div>
+                <br></br>
                 <h2>Participando</h2>
-                {loading ? (
-                  <p>Carregando projetos...</p>
-                ) : (
-                  <div className="projects-grid">
-                    {projetosParticipando.length > 0 ? (
-                      projetosParticipando.map(projeto => (
-                        <div key={projeto.id} className="projects-item" onClick={() => handleProjetoClick(projeto)}>
-                          <img
-                            src={projeto.capaUrl ? `https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${projeto.id}/capa` : defaultImage}
-                            alt="Capa do Projeto"
-                            className="project-image"
-                          />
-                          <h2>{projeto.titulo}</h2>
-                          <p>{projeto.descricao}</p>
-                          <p><strong>Tecnologia:</strong> {projeto.tecnologia}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <p>Nenhum projeto encontrado.</p>
-                    )}
-                  </div>
-                )}
+                <div className="projects-grid">
+                  {projetosParticipando.length > 0 ? (
+                    projetosParticipando.map(projeto => (
+                      <div key={projeto.id} className="projects-item" onClick={() => handleProjetoClick(projeto)}>
+                        <img 
+                          src={projeto.capaUrl ? `http://localhost:2216/projetos/${projeto.id}/capa` : defaultImage} 
+                          alt="Capa do Projeto" 
+                          className="project-image"
+                          onError={(e) => { e.target.onerror = null; e.target.src = defaultImage; }} // Adiciona fallback para imagem padrão
+                        />
+                        <h2>{projeto.titulo}</h2>
+                        <p>{projeto.descricao}</p>
+                        <p><strong>Tecnologia:</strong> {projeto.tecnologia}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p>Nenhum projeto encontrado.</p>
+                  )}
+                </div>
               </>
             )}
           </div>
