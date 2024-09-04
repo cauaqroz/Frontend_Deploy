@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { ProjetosUsuarioContext } from '../context/ProjetosUsuarioContext';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
-import defaultImage from '../assets/baixados.png'; // Importe a imagem
-import '../styles/Projetos.css'; // Importe o CSS
+import Loading from '../components/Loading';
+import defaultImage from '../assets/baixados.png'; 
+import '../styles/Projetos.css'; 
 
 const Projetos = () => {
   const navigate = useNavigate();
@@ -294,7 +295,7 @@ const Projetos = () => {
     }
   };
 
-  if (loading) return <p>Carregando projetos...</p>;
+  if (loading) return <Loading />
   if (error) return <p>Erro ao carregar os projetos: {error.message}</p>;
 
   return (
