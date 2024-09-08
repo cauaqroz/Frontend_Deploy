@@ -1,23 +1,29 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ProjetosContext } from '../context/ProjetosContext';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
-import defaultImage from '../assets/baixados.png'; // Importe a imagem
-import '../styles/Inicial.css'; // Importe o CSS
+import defaultImage from '../assets/baixados.png'; 
+import config from '../config/Config';
+import '../styles/Inicial.css'; 
 
 const Inicial = () => {
+  const location = useLocation();
   const navigate = useNavigate();
-  const { projetos, loading, error } = useContext(ProjetosContext);
   const [user, setUser] = useState(null);
   const [freelancer, setFreelancer] = useState(null);
+  const [userId, setUserId] = useState(location.state?.userId || null);
+  const [projetos, setProjetos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [hours, setHours] = useState(0);
   const [rate, setRate] = useState(0);
   const [total, setTotal] = useState(0);
+  const [visibleProjects, setVisibleProjects] = useState(8); // Estado para controlar a quantidade de projetos visíveis
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem('user'));
@@ -30,9 +36,32 @@ const Inicial = () => {
     }
   }, []);
 
-  const handleLogout = () => {
+  useEffect(() => {
+    const fetchProjetos = async () => {
+      try {
+        const response = await axios.get(`${config.LocalApi}/projetos`);
+        setProjetos(response.data.reverse()); // Inverte a lista de projetos
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjetos();
+  }, []);
+
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleConfirmLogout = () => {
     sessionStorage.clear();
     navigate('/login');
+  };
+
+  const handleCancelLogout = () => {
+    setShowLogoutModal(false);
   };
 
   const handleSearchChange = async (event) => {
@@ -41,10 +70,10 @@ const Inicial = () => {
 
     if (isSearchActive && term) {
       try {
-        const response = await axios.get(`https://backend-conecta-09de4578e9de.herokuapp.com/projetos/buscarProjetos?titulo=${term}`);
-        setSearchResults(response.data);
+        const response = await axios.get(`${config.LocalApi}/projetos/buscarProjetos?titulo=${term}`);
+        setSearchResults(response.data.reverse()); // Inverte a lista de resultados de busca
       } catch (err) {
-        console.error('Erro ao buscar projetos:', err);
+        setError(err);
       }
     } else {
       setSearchResults([]);
@@ -63,9 +92,9 @@ const Inicial = () => {
     navigate(`/detalhes-projeto/${id}`);
   };
 
-  if (!user) return <p>Carregando...</p>;
-  if (loading) return <p>Carregando projetos...</p>;
-  if (error) return <p>Erro ao carregar os projetos: {error.message}</p>;
+  const handleLoadMore = () => {
+    setVisibleProjects((prevVisibleProjects) => prevVisibleProjects + 8);
+  };
 
   const projetosToDisplay = searchTerm ? searchResults : projetos;
 
@@ -73,18 +102,31 @@ const Inicial = () => {
     <div style={{ display: 'flex' }}>
       <Sidebar />
       <div className="container">
+        <Header onLogout={handleLogoutClick} onSearchChange={handleSearchChange} onSearchFocus={handleSearchFocus} />
         <div className="feed">
-          <Header onLogout={handleLogout} onSearchChange={handleSearchChange} onSearchFocus={handleSearchFocus} />
-          <div style={{ paddingTop: '60px' }}>
-            {projetosToDisplay.map(projeto => (
-              <div key={projeto.id} className="card" onClick={() => handleProjetoClick(projeto.id)}>
-                <img src={projeto.capaUrl ? `https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${projeto.id}/capa` : defaultImage} alt="Capa do Projeto" />
-                <h1>{projeto.titulo}</h1>
-                <p><strong>Descrição:</strong> {projeto.descricao}</p>
-                <p><strong>Tecnologia:</strong> {projeto.tecnologia}</p>
-              </div>
-            ))}
-          </div>
+          {loading ? (
+            <p>Carregando projetos...</p>
+          ) : error ? (
+            <p>Erro ao carregar os projetos: {error.message}</p>
+          ) : (
+            <div style={{ paddingTop: '60px' }}>
+              {projetosToDisplay.slice(0, visibleProjects).map(projeto => (
+                <div key={projeto.id} className="card" onClick={() => handleProjetoClick(projeto.id)}>
+                  <img src={projeto.capaUrl ? `${config.LocalApi}/projetos/${projeto.id}/capa` : defaultImage} alt="Capa do Projeto" />
+                  <h1>{projeto.titulo}</h1>
+                  <p><strong>Descrição:</strong> {projeto.descricao}</p>
+                  <p><strong>Tecnologia:</strong> {projeto.tecnologia}</p>
+                </div>
+              ))}
+              {visibleProjects < projetosToDisplay.length && (
+                <div className="load-more" onClick={handleLoadMore}>
+                  <span className="line"></span>
+                  <span className="text">Exibir Mais</span>
+                  <span className="line"></span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
         <div className="initial-payments-feed">
           {freelancer ? (
@@ -92,11 +134,11 @@ const Inicial = () => {
               <h2>Simular Valor do Freelancer</h2>
               <div>
                 <label>Horas Trabalhadas:</label>
-                <input type="number" value={hours} onChange={(e) => setHours(Number(e.target.value))} />
+                <input type="number" value={hours} onChange={(e) => setHours(e.target.value)} />
               </div>
               <div>
                 <label>Taxa por Hora:</label>
-                <input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} />
+                <input type="number" value={rate} onChange={(e) => setRate(e.target.value)} />
               </div>
               <button onClick={handleCalculate}>Calcular</button>
               <p>Total: {total}</p>
@@ -106,11 +148,11 @@ const Inicial = () => {
               <h2>Calcular Custo do Projeto</h2>
               <div>
                 <label>Horas Trabalhadas:</label>
-                <input type="number" value={hours} onChange={(e) => setHours(Number(e.target.value))} />
+                <input type="number" value={hours} onChange={(e) => setHours(e.target.value)} />
               </div>
               <div>
                 <label>Taxa por Hora:</label>
-                <input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value))} />
+                <input type="number" value={rate} onChange={(e) => setRate(e.target.value)} />
               </div>
               <button onClick={handleCalculate}>Calcular</button>
               <p>Total: {total}</p>
@@ -122,8 +164,21 @@ const Inicial = () => {
           </div>
         </div>
       </div>
+      {showLogoutModal && (
+        <LogoutModal onConfirm={handleConfirmLogout} onCancel={handleCancelLogout} />
+      )}
     </div>
   );
 };
-
+const LogoutModal = ({ onConfirm, onCancel }) => (
+  <div className="modal-overlay">
+    <div className="modal">
+      <h2>Você deseja sair?</h2>
+      <div className="modal-buttons">
+        <button onClick={onConfirm}>Confirmar</button>
+        <button onClick={onCancel}>Cancelar</button>
+      </div>
+    </div>
+  </div>
+);
 export default Inicial;

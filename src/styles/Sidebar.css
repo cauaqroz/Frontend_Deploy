@@ -2,7 +2,8 @@
 .sidebar {
   width: 200px;
   height: 100vh;
-  background-color: #f4f4f4;
+  border-right: 1px solid black;
+  background-color: #e8e8e8;
   padding: 20px;
   position: fixed; /* Torna a sidebar fixa */
   top: 0;
@@ -19,12 +20,13 @@
 .menu-section, .social-section, .general-section {
   width: 100%; /* Garante que as seções ocupem toda a largura da sidebar */
   margin-bottom: 20px;
+  margin-top: 35px;
 }
 
 .menu-section h5, .social-section h5, .general-section h5 {
   margin-bottom: 10px;
-  font-size: 0.9em;
-  color: #5e5e5e;
+  font-size: 1em;
+  color: #3c3c3c;
   text-align: center; /* Centraliza o título da seção */
 }
 
@@ -59,11 +61,11 @@
 }
 
 .sidebar ul li.active a {
-  background-color: #fff; /* Cor de fundo da aba ativa */
+  background-color: #f8f7f2; /* Cor de fundo da aba ativa */
   width: calc(100% + 20px); /* Aumenta a largura da aba ativa */
   color: #000; /* Cor do texto da aba ativa */
   margin-right: -20px;
-
+  border-radius: 20px;
 }
 
 .sidebar .add-project {

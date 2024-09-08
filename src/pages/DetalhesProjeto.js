@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import defaultImage from '../assets/baixados.png'; // Importe a imagem
@@ -25,12 +25,12 @@ const DetalhesProjeto = () => {
 
     const fetchProjeto = async () => {
       try {
-        const response = await axios.get(`https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${id}`);
+        const response = await axios.get(`http://localhost:2216/projetos/${id}`);
         setProjeto(response.data);
 
         if (response.data.approvedParticipants) {
           const participantesPromises = response.data.approvedParticipants.map(async (participanteId) => {
-            const participanteResponse = await axios.get(`https://backend-conecta-09de4578e9de.herokuapp.com/users/${participanteId}`);
+            const participanteResponse = await axios.get(`http://localhost:2216/users/${participanteId}`);
             return participanteResponse.data;
           });
 
@@ -61,7 +61,7 @@ const DetalhesProjeto = () => {
 
   const handleRequestParticipation = async () => {
     try {
-      const response = await axios.post(`https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${id}/solicitarParticipacao`, {}, {
+      const response = await axios.post(`http://localhost:2216/projetos/${id}/solicitarParticipacao`, {}, {
         headers: {
           'userId': userId
         }
@@ -77,9 +77,6 @@ const DetalhesProjeto = () => {
     }
   };
 
-  const memoizedProjeto = useMemo(() => projeto, [projeto]);
-  const memoizedParticipantes = useMemo(() => participantes, [participantes]);
-
   if (loading) return <p>Carregando...</p>;
   if (error) return <p>Erro ao carregar o projeto: {error.message}</p>;
 
@@ -90,26 +87,26 @@ const DetalhesProjeto = () => {
         <Header onLogout={handleLogout} />
         <div className="project-card">
           <img 
-            src={memoizedProjeto.capaUrl ? `https://backend-conecta-09de4578e9de.herokuapp.com/projetos/${memoizedProjeto.id}/capa` : defaultImage} 
+            src={projeto.capaUrl ? `http://localhost:2216/projetos/${projeto.id}/capa` : defaultImage} 
             alt="Capa do Projeto" 
           />
-          <h1>{memoizedProjeto.titulo}</h1>
+          <h1>{projeto.titulo}</h1>
           <button className="request-button" onClick={handleRequestParticipation} disabled={isRequestDisabled}>
             Solicitar Participação
           </button>
         </div>
         <div className="project-details">
-          <p><strong>Descrição:</strong> {memoizedProjeto.descricao}</p>
-          <p><strong>Tecnologia:</strong> {memoizedProjeto.tecnologia}</p>
-          <p><strong>Criador:</strong> {memoizedProjeto.criador.name} {memoizedProjeto.criador.lastName}</p>
-          <p><strong>Email Criador:</strong> <a href={`mailto:${memoizedProjeto.criador.email}`}>{memoizedProjeto.criador.email}</a></p>
-          <p><strong>País:</strong> {memoizedProjeto.criador.country} <strong>- Estado:</strong> {memoizedProjeto.criador.state}</p>
+          <p><strong>Descrição:</strong> {projeto.descricao}</p>
+          <p><strong>Tecnologia:</strong> {projeto.tecnologia}</p>
+          <p><strong>Criador:</strong> {projeto.criador.name} {projeto.criador.lastName}</p>
+          <p><strong>Email Criador:</strong> <a href={`mailto:${projeto.criador.email}`}>{projeto.criador.email}</a></p>
+          <p><strong>País:</strong> {projeto.criador.country} <strong>- Estado:</strong> {projeto.criador.state}</p>
         </div>
-        {memoizedParticipantes.length > 0 && (
+        {participantes.length > 0 && (
           <div className="participantes-card">
             <h2>Inscritos</h2>
             <ul>
-              {memoizedParticipantes.map(participante => (
+              {participantes.map(participante => (
                 <li key={participante.id} className="participante-item">
                   <div className="participante-card">
                     <p><strong>{participante.name} {participante.lastName}</strong></p>

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/Login.css'; // Importe o CSS
-import loginImage from '../assets/LoginImg.jpeg'; // Importe a imagem
+import '../styles/Login.css';
+import loginImage from '../assets/LoginImg.jpg'; 
+import config from '../config/Config';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -16,7 +17,7 @@ const Login = () => {
       [name]: value,
     }));
 
-    // Validação de campo
+ 
     let errorMessages = { ...errors };
     if (name === 'email') {
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -40,7 +41,7 @@ const Login = () => {
     event.preventDefault();
     setError(''); // Limpa o erro antes de tentar logar
     try {
-      const response = await fetch(' https://backend-conecta-09de4578e9de.herokuapp.com/users/login', {
+      const response = await fetch(`${config.LocalApi}/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,15 +50,15 @@ const Login = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        sessionStorage.setItem('user', JSON.stringify(data)); // Armazena as informações do usuário no sessionStorage
+        sessionStorage.setItem('user', JSON.stringify(data)); 
 
         // Buscar perfil de freelancer
-        const freelancerResponse = await fetch(` https://backend-conecta-09de4578e9de.herokuapp.com/users/${data.id}/freelancer`);
+        const freelancerResponse = await fetch(`${config.LocalApi}/users/${data.id}/freelancer`);
         if (freelancerResponse.ok) {
           const freelancerData = await freelancerResponse.json();
-          sessionStorage.setItem('freelancer', JSON.stringify(freelancerData)); // Armazena as informações do freelancer no sessionStorage
+          sessionStorage.setItem('freelancer', JSON.stringify(freelancerData)); 
         } else {
-          sessionStorage.removeItem('freelancer'); // Remove qualquer perfil de freelancer existente
+          sessionStorage.removeItem('freelancer'); 
         }
 
         navigate('/inicial', { state: { userId: data.id } }); // Passa o ID do usuário como estado na navegação

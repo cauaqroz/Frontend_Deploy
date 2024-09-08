@@ -1,4 +1,5 @@
 .register-container {
+    background: white;
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -63,7 +64,7 @@
   }
   
   .image-register img {
-    max-width: 70%;
+    max-width: 80%;
     height: auto;
     padding-left: 150px;
   }

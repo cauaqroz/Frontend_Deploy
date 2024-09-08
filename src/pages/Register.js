@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/Register.css'; // Importe o CSS
-import registerImage from '../assets/CadastroImg.jpeg'; // Importe a imagem
-
+import '../styles/Register.css'; 
+import registerImage from '../assets/Research paper Customizable Flat Illustrations _ Rafiki Style.jpg'; 
+import config from '../config/Config';
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -46,7 +46,7 @@ const Register = () => {
     event.preventDefault();
     setError(''); // Limpa o erro antes de tentar registrar
     try {
-      const response = await fetch(' https://backend-conecta-09de4578e9de.herokuapp.com/users', { //endereço da API
+      const response = await fetch(`${config.LocalApi}/users`, { //endereço da API
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
