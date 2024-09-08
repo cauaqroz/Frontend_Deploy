@@ -1,5 +1,5 @@
 const config = {
-    LocalApi: 'https://backend-conecta-09de4578e9de.herokuapp.com/',
+    LocalApi: 'https://backend-conecta-09de4578e9de.herokuapp.com',
 
     ProdApi: 'http://localhost:2216'
 };
