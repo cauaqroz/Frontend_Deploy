@@ -47,7 +47,7 @@ const DetalhesProjeto = () => {
       } catch (err) {
         setError(err);
       } finally {
-        setLoading(false);
+       setLoading(false);
       }
     };
 
@@ -84,10 +84,10 @@ const DetalhesProjeto = () => {
         <Header onLogout={handleLogout} />
         {loading ? (
   <>
-    <Skeleton type="card" />
-    <Skeleton type="text" />
-    <Skeleton type="text" />
-    <Skeleton type="text" />
+    <Skeleton type="card" page="detalhes" />
+    <Skeleton type="text" page="detalhes" />
+    <Skeleton type="text" page="detalhes" />
+    <Skeleton type="text" page="detalhes" />
   </>
 ) : error ? (
   <p>Erro ao carregar o projeto: {error.message}</p>

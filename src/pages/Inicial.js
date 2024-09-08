@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import Sidebar from '../components/Sidebar';
-import Header from '../components/Header';
-import Skeleton from '../components/Skeleton';
-import defaultImage from '../assets/baixados.png'; 
-import config from '../config/Config';
-import '../styles/Inicial.css'; 
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
+import Skeleton from "../components/Skeleton";
+import defaultImage from "../assets/baixados.png";
+import config from "../config/Config";
+import "../styles/Inicial.css";
 
 const Inicial = () => {
   const location = useLocation();
@@ -17,7 +17,7 @@ const Inicial = () => {
   const [projetos, setProjetos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [hours, setHours] = useState(0);
@@ -27,8 +27,8 @@ const Inicial = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
-    const userData = JSON.parse(sessionStorage.getItem('user'));
-    const freelancerData = JSON.parse(sessionStorage.getItem('freelancer'));
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    const freelancerData = JSON.parse(sessionStorage.getItem("freelancer"));
     if (userData) {
       setUser(userData);
     }
@@ -58,7 +58,7 @@ const Inicial = () => {
 
   const handleConfirmLogout = () => {
     sessionStorage.clear();
-    navigate('/login');
+    navigate("/login");
   };
 
   const handleCancelLogout = () => {
@@ -71,7 +71,9 @@ const Inicial = () => {
 
     if (isSearchActive && term) {
       try {
-        const response = await axios.get(`${config.LocalApi}/projetos/buscarProjetos?titulo=${term}`);
+        const response = await axios.get(
+          `${config.LocalApi}/projetos/buscarProjetos?titulo=${term}`
+        );
         setSearchResults(response.data.reverse());
       } catch (err) {
         setError(err);
@@ -100,27 +102,46 @@ const Inicial = () => {
   const projetosToDisplay = searchTerm ? searchResults : projetos;
 
   return (
-    <div style={{ display: 'flex' }}>
+    <div style={{ display: "flex" }}>
       <Sidebar />
       <div className="container">
-        <Header onLogout={handleLogoutClick} onSearchChange={handleSearchChange} onSearchFocus={handleSearchFocus} />
+        <Header
+          onLogout={handleLogoutClick}
+          onSearchChange={handleSearchChange}
+          onSearchFocus={handleSearchFocus}
+        />
         <div className="feed">
           {loading ? (
             <>
-              <Skeleton type="card" />
-              <Skeleton type="card" />
-              <Skeleton type="card" />
+              <Skeleton type="card" page="inicial" />
+              <Skeleton type="card" page="inicial" />
+              <Skeleton type="card" page="inicial" />
             </>
           ) : error ? (
             <p>Erro ao carregar os projetos: {error.message}</p>
           ) : (
-            <div style={{ paddingTop: '60px' }}>
-              {projetosToDisplay.slice(0, visibleProjects).map(projeto => (
-                <div key={projeto.id} className="card" onClick={() => handleProjetoClick(projeto.id)}>
-                  <img src={projeto.capaUrl ? `${config.LocalApi}/projetos/${projeto.id}/capa` : defaultImage} alt="Capa do Projeto" />
+            <div style={{ paddingTop: "60px" }}>
+              {projetosToDisplay.slice(0, visibleProjects).map((projeto) => (
+                <div
+                  key={projeto.id}
+                  className="card"
+                  onClick={() => handleProjetoClick(projeto.id)}
+                >
+                  <img
+                    src={
+                      projeto.capaUrl
+                        ? `${config.LocalApi}/projetos/${projeto.id}/capa`
+                        : defaultImage
+                    }
+                    alt="Capa do Projeto"
+                  />
                   <h1>{projeto.titulo}</h1>
-                  <p><strong>Descrição:</strong> {projeto.descricao}</p>
-                  <p><strong>Tecnologia:</strong> {projeto.tecnologia}</p>
+                  <p>
+                    <strong>Descrição:</strong> {projeto.descricao}
+                  </p>
+                  <p>
+                    <strong>Tecnologia:</strong> {projeto.tecnologia}
+                  </p>
                 </div>
               ))}
               {visibleProjects < projetosToDisplay.length && (
@@ -139,11 +160,19 @@ const Inicial = () => {
               <h2>Simular Valor do Freelancer</h2>
               <div>
                 <label>Horas Trabalhadas:</label>
-                <input type="number" value={hours} onChange={(e) => setHours(e.target.value)} />
+                <input
+                  type="number"
+                  value={hours}
+                  onChange={(e) => setHours(e.target.value)}
+                />
               </div>
               <div>
                 <label>Taxa por Hora:</label>
-                <input type="number" value={rate} onChange={(e) => setRate(e.target.value)} />
+                <input
+                  type="number"
+                  value={rate}
+                  onChange={(e) => setRate(e.target.value)}
+                />
               </div>
               <button onClick={handleCalculate}>Calcular</button>
               <p>Total: {total}</p>
@@ -153,11 +182,19 @@ const Inicial = () => {
               <h2>Calcular Custo do Projeto</h2>
               <div>
                 <label>Horas Trabalhadas:</label>
-                <input type="number" value={hours} onChange={(e) => setHours(e.target.value)} />
+                <input
+                  type="number"
+                  value={hours}
+                  onChange={(e) => setHours(e.target.value)}
+                />
               </div>
               <div>
                 <label>Taxa por Hora:</label>
-                <input type="number" value={rate} onChange={(e) => setRate(e.target.value)} />
+                <input
+                  type="number"
+                  value={rate}
+                  onChange={(e) => setRate(e.target.value)}
+                />
               </div>
               <button onClick={handleCalculate}>Calcular</button>
               <p>Total: {total}</p>
@@ -170,7 +207,10 @@ const Inicial = () => {
         </div>
       </div>
       {showLogoutModal && (
-        <LogoutModal onConfirm={handleConfirmLogout} onCancel={handleCancelLogout} />
+        <LogoutModal
+          onConfirm={handleConfirmLogout}
+          onCancel={handleCancelLogout}
+        />
       )}
     </div>
   );
