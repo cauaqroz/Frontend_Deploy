@@ -83,51 +83,51 @@ const DetalhesProjeto = () => {
       <div className="container">
         <Header onLogout={handleLogout} />
         {loading ? (
-          <>
-            <Skeleton type="card" />
-            <Skeleton type="text" />
-            <Skeleton type="text" />
-            <Skeleton type="text" />
-          </>
-        ) : error ? (
-          <p>Erro ao carregar o projeto: {error.message}</p>
-        ) : (
-          <>
-            <div className="project-card">
-              <img 
-                src={projeto.capaUrl ? `${config.LocalApi}/projetos/${projeto.id}/capa` : defaultImage} 
-                alt="Capa do Projeto" 
-              />
-              <h1>{projeto.titulo}</h1>
-              <button className="request-button" onClick={handleRequestParticipation} disabled={isRequestDisabled}>
-                Solicitar Participação
-              </button>
-            </div>
-            <div className="project-details">
-              <p><strong>Descrição:</strong> {projeto.descricao}</p>
-              <p><strong>Tecnologia:</strong> {projeto.tecnologia}</p>
-              <p><strong>Criador:</strong> {projeto.criador.name} {projeto.criador.lastName}</p>
-              <p><strong>Email Criador:</strong> <a href={`mailto:${projeto.criador.email}`}>{projeto.criador.email}</a></p>
-              <p><strong>País:</strong> {projeto.criador.country} <strong>- Estado:</strong> {projeto.criador.state}</p>
-            </div>
-            {participantes.length > 0 && (
-              <div className="participantes-card">
-                <h2>Inscritos</h2>
-                <ul>
-                  {participantes.map(participante => (
-                    <li key={participante.id} className="participante-item">
-                      <div className="participante-card">
-                        <p><strong>{participante.name} {participante.lastName}</strong></p>
-                        <p><strong>Email:</strong> <a href={`mailto:${participante.email}`}>{participante.email}</a></p>
-                        <p><strong>País:</strong> {participante.country} <strong>- Estado:</strong> {participante.state}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+  <>
+    <Skeleton type="card" />
+    <Skeleton type="text" />
+    <Skeleton type="text" />
+    <Skeleton type="text" />
+  </>
+) : error ? (
+  <p>Erro ao carregar o projeto: {error.message}</p>
+) : (
+  <>
+    <div className="project-card">
+      <img 
+        src={projeto.capaUrl ? `${config.LocalApi}/projetos/${projeto.id}/capa` : defaultImage} 
+        alt="Capa do Projeto" 
+      />
+      <h1>{projeto.titulo}</h1>
+      <button className="request-button" onClick={handleRequestParticipation} disabled={isRequestDisabled}>
+        Solicitar Participação
+      </button>
+    </div>
+    <div className="project-details">
+      <p><strong>Descrição:</strong> {projeto.descricao}</p>
+      <p><strong>Tecnologia:</strong> {projeto.tecnologia}</p>
+      <p><strong>Criador:</strong> {projeto.criador.name} {projeto.criador.lastName}</p>
+      <p><strong>Email Criador:</strong> <a href={`mailto:${projeto.criador.email}`}>{projeto.criador.email}</a></p>
+      <p><strong>País:</strong> {projeto.criador.country} <strong>- Estado:</strong> {projeto.criador.state}</p>
+    </div>
+    {participantes.length > 0 && (
+      <div className="participantes-card">
+        <h2>Inscritos</h2>
+        <ul>
+          {participantes.map(participante => (
+            <li key={participante.id} className="participante-item">
+              <div className="participante-card">
+                <p><strong>{participante.name} {participante.lastName}</strong></p>
+                <p><strong>Email:</strong> <a href={`mailto:${participante.email}`}>{participante.email}</a></p>
+                <p><strong>País:</strong> {participante.country} <strong>- Estado:</strong> {participante.state}</p>
               </div>
-            )}
-          </>
-        )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </>
+)}
       </div>
     </div>
   );
