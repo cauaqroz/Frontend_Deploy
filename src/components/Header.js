@@ -15,16 +15,22 @@ const Header = ({ onLogout, onSearchChange, onSearchFocus, selectedProjeto, open
     const fetchUserAvatar = async () => {
       const user = JSON.parse(sessionStorage.getItem('user'));
       if (user && user.avatar) {
-        try {
-          const response = await axios.get(`${config.LocalApi}/users/avatar/${user.avatar}`, {
-            responseType: 'blob'
-          });
-          if (response.status === 200) {
-            const imageUrl = URL.createObjectURL(response.data);
-            setUserAvatar(imageUrl);
+        const cachedAvatarUrl = sessionStorage.getItem('userAvatarUrl');
+        if (cachedAvatarUrl) {
+          setUserAvatar(cachedAvatarUrl);
+        } else {
+          try {
+            const response = await axios.get(`${config.LocalApi}/users/avatar/${user.avatar}`, {
+              responseType: 'blob'
+            });
+            if (response.status === 200) {
+              const imageUrl = URL.createObjectURL(response.data);
+              setUserAvatar(imageUrl);
+              sessionStorage.setItem('userAvatarUrl', imageUrl);
+            }
+          } catch (error) {
+            console.error('Erro ao buscar imagem de perfil:', error);
           }
-        } catch (error) {
-          console.error('Erro ao buscar imagem de perfil:', error);
         }
       }
     };
