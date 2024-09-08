@@ -4,6 +4,7 @@ import axios from 'axios';
 import defaultImage from '../assets/baixados.png';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header'; 
+import Skeleton from '../components/Skeleton';
 import '../styles/DetalhesProjeto.css';
 import config from '../config/Config';
 
@@ -14,11 +15,10 @@ const DetalhesProjeto = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [participantes, setParticipantes] = useState([]);
-  const [userId, setUserId] = useState(null); // Estado para armazenar o ID do usuário
-  const [isRequestDisabled, setIsRequestDisabled] = useState(false); // Estado para desabilitar o botão
+  const [userId, setUserId] = useState(null);
+  const [isRequestDisabled, setIsRequestDisabled] = useState(false);
 
   useEffect(() => {
-    // Recuperar o ID do usuário do sessionStorage
     const storedUser = JSON.parse(sessionStorage.getItem('user'));
     if (storedUser && storedUser.id) {
       setUserId(storedUser.id);
@@ -39,7 +39,6 @@ const DetalhesProjeto = () => {
           setParticipantes(participantesData);
         }
 
-        // Verificar se o usuário já solicitou ou foi aprovado ou é o criador do projeto
         const isUserInLists = response.data.participationRequests.includes(storedUser.id) || 
                               response.data.approvedParticipants.includes(storedUser.id) ||
                               response.data.criador.id === storedUser.id;
@@ -78,46 +77,56 @@ const DetalhesProjeto = () => {
     }
   };
 
-  if (loading) return <p>Carregando...</p>;
-  if (error) return <p>Erro ao carregar o projeto: {error.message}</p>;
-
   return (
     <div className="detalhes-projeto" style={{ display: 'flex' }}>
       <Sidebar activeTab="/projetos" />
       <div className="container">
         <Header onLogout={handleLogout} />
-        <div className="project-card">
-          <img 
-            src={projeto.capaUrl ? `${config.LocalApi}/projetos/${projeto.id}/capa` : defaultImage} 
-            alt="Capa do Projeto" 
-          />
-          <h1>{projeto.titulo}</h1>
-          <button className="request-button" onClick={handleRequestParticipation} disabled={isRequestDisabled}>
-            Solicitar Participação
-          </button>
-        </div>
-        <div className="project-details">
-          <p><strong>Descrição:</strong> {projeto.descricao}</p>
-          <p><strong>Tecnologia:</strong> {projeto.tecnologia}</p>
-          <p><strong>Criador:</strong> {projeto.criador.name} {projeto.criador.lastName}</p>
-          <p><strong>Email Criador:</strong> <a href={`mailto:${projeto.criador.email}`}>{projeto.criador.email}</a></p>
-          <p><strong>País:</strong> {projeto.criador.country} <strong>- Estado:</strong> {projeto.criador.state}</p>
-        </div>
-        {participantes.length > 0 && (
-          <div className="participantes-card">
-            <h2>Inscritos</h2>
-            <ul>
-              {participantes.map(participante => (
-                <li key={participante.id} className="participante-item">
-                  <div className="participante-card">
-                    <p><strong>{participante.name} {participante.lastName}</strong></p>
-                    <p><strong>Email:</strong> <a href={`mailto:${participante.email}`}>{participante.email}</a></p>
-                    <p><strong>País:</strong> {participante.country} <strong>- Estado:</strong> {participante.state}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
+        {loading ? (
+          <>
+            <Skeleton type="card" />
+            <Skeleton type="text" />
+            <Skeleton type="text" />
+            <Skeleton type="text" />
+          </>
+        ) : error ? (
+          <p>Erro ao carregar o projeto: {error.message}</p>
+        ) : (
+          <>
+            <div className="project-card">
+              <img 
+                src={projeto.capaUrl ? `${config.LocalApi}/projetos/${projeto.id}/capa` : defaultImage} 
+                alt="Capa do Projeto" 
+              />
+              <h1>{projeto.titulo}</h1>
+              <button className="request-button" onClick={handleRequestParticipation} disabled={isRequestDisabled}>
+                Solicitar Participação
+              </button>
+            </div>
+            <div className="project-details">
+              <p><strong>Descrição:</strong> {projeto.descricao}</p>
+              <p><strong>Tecnologia:</strong> {projeto.tecnologia}</p>
+              <p><strong>Criador:</strong> {projeto.criador.name} {projeto.criador.lastName}</p>
+              <p><strong>Email Criador:</strong> <a href={`mailto:${projeto.criador.email}`}>{projeto.criador.email}</a></p>
+              <p><strong>País:</strong> {projeto.criador.country} <strong>- Estado:</strong> {projeto.criador.state}</p>
+            </div>
+            {participantes.length > 0 && (
+              <div className="participantes-card">
+                <h2>Inscritos</h2>
+                <ul>
+                  {participantes.map(participante => (
+                    <li key={participante.id} className="participante-item">
+                      <div className="participante-card">
+                        <p><strong>{participante.name} {participante.lastName}</strong></p>
+                        <p><strong>Email:</strong> <a href={`mailto:${participante.email}`}>{participante.email}</a></p>
+                        <p><strong>País:</strong> {participante.country} <strong>- Estado:</strong> {participante.state}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

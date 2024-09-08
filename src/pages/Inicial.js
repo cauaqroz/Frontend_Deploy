@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import Skeleton from '../components/Skeleton';
 import defaultImage from '../assets/baixados.png'; 
 import config from '../config/Config';
 import '../styles/Inicial.css'; 
@@ -22,7 +23,7 @@ const Inicial = () => {
   const [hours, setHours] = useState(0);
   const [rate, setRate] = useState(0);
   const [total, setTotal] = useState(0);
-  const [visibleProjects, setVisibleProjects] = useState(8); // Estado para controlar a quantidade de projetos visíveis
+  const [visibleProjects, setVisibleProjects] = useState(8);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
@@ -40,7 +41,7 @@ const Inicial = () => {
     const fetchProjetos = async () => {
       try {
         const response = await axios.get(`${config.LocalApi}/projetos`);
-        setProjetos(response.data.reverse()); // Inverte a lista de projetos
+        setProjetos(response.data.reverse());
       } catch (err) {
         setError(err);
       } finally {
@@ -71,7 +72,7 @@ const Inicial = () => {
     if (isSearchActive && term) {
       try {
         const response = await axios.get(`${config.LocalApi}/projetos/buscarProjetos?titulo=${term}`);
-        setSearchResults(response.data.reverse()); // Inverte a lista de resultados de busca
+        setSearchResults(response.data.reverse());
       } catch (err) {
         setError(err);
       }
@@ -105,7 +106,11 @@ const Inicial = () => {
         <Header onLogout={handleLogoutClick} onSearchChange={handleSearchChange} onSearchFocus={handleSearchFocus} />
         <div className="feed">
           {loading ? (
-            <p>Carregando projetos...</p>
+            <>
+              <Skeleton type="card" />
+              <Skeleton type="card" />
+              <Skeleton type="card" />
+            </>
           ) : error ? (
             <p>Erro ao carregar os projetos: {error.message}</p>
           ) : (
@@ -170,6 +175,7 @@ const Inicial = () => {
     </div>
   );
 };
+
 const LogoutModal = ({ onConfirm, onCancel }) => (
   <div className="modal-overlay">
     <div className="modal">
@@ -181,4 +187,5 @@ const LogoutModal = ({ onConfirm, onCancel }) => (
     </div>
   </div>
 );
+
 export default Inicial;

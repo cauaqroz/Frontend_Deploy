@@ -1,0 +1,26 @@
+.skeleton {
+    background-color: #ddd;
+    border-radius: 4px;
+    margin: 10px 0;
+  }
+  
+  .skeleton.text {
+    height: 20px;
+    width: 100%;
+  }
+  
+  .skeleton.title {
+    height: 30px;
+    width: 50%;
+  }
+  
+  .skeleton.image {
+    height: 200px;
+    width: 100%;
+  }
+  
+  .skeleton.card {
+    height: 300px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
