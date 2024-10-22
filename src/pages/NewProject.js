@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
@@ -14,6 +14,17 @@ const NewProject = () => {
     image: null, // Adicione o campo de imagem
   });
   const [loading, setLoading] = useState(false); // Estado para controlar a tela de carregamento
+  const [isSidebarVisible, setIsSidebarVisible] = useState(() => {
+    const savedPreference = sessionStorage.getItem('showSidebar');
+    return savedPreference ? JSON.parse(savedPreference) : true;
+  }); // Estado para visibilidade da sidebar
+
+  useEffect(() => {
+    const storedSidebarState = sessionStorage.getItem('showSidebar');
+    if (storedSidebarState !== null) {
+      setIsSidebarVisible(JSON.parse(storedSidebarState));
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -72,11 +83,21 @@ const NewProject = () => {
     }
   };
 
+  const toggleSidebar = () => {
+    const newVisibility = !isSidebarVisible;
+    setIsSidebarVisible(newVisibility);
+    sessionStorage.setItem('showSidebar', JSON.stringify(newVisibility));
+  };
+
   return (
     <div style={{ display: 'flex' }}>
-      <Sidebar />
-      <div className="container">
+      <div className="initial-top"></div>
+      {isSidebarVisible && <Sidebar />}
+      <div className="container" style={{ marginLeft: isSidebarVisible ? '350px' : '350px', transition: 'margin-left 0.3s' }}>
         <Header />
+        <button onClick={toggleSidebar} className="toggle-sidebar-button">
+          {isSidebarVisible ? <i className="fas fa-times"></i> : <i className="fas fa-bars"></i>}
+        </button>
         {loading ? (
           <Loading />
         ) : (

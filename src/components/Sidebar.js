@@ -19,10 +19,10 @@ const Sidebar = ({ activeTab }) => {
         <h5>Menu</h5>
         <ul>
           <li className={currentTab === '/inicial' ? 'active' : ''}>
-            <Link to="/inicial" onClick={() => setCurrentTab('/inicial')}>Home</Link>
+            <Link to="/inicial" onClick={() => setCurrentTab('/inicial')}>Inicio</Link>
           </li>
           <li className={currentTab === '/projetos' ? 'active' : ''}>
-            <Link to="/projetos" onClick={() => setCurrentTab('/projetos')}>Projects</Link>
+            <Link to="/projetos" onClick={() => setCurrentTab('/projetos')}>Projetos</Link>
           </li>
 
         </ul>
@@ -30,19 +30,22 @@ const Sidebar = ({ activeTab }) => {
       <div className="social-section">
         <h5>Social</h5>
         <ul>
-          <li className={currentTab === '/peoples' ? 'active' : ''}>
-            <Link to="/peoples" onClick={() => setCurrentTab('/peoples')}>Peoples</Link>
+          <li className={currentTab === '/friends' ? 'active' : ''}>
+            <Link to="/friends" onClick={() => setCurrentTab('/friends')}>Pessoas</Link>
+          </li>
+          <li className={currentTab === '/channel' ? 'active' : ''}>
+            <Link to="/channel" onClick={() => setCurrentTab('/channel')}>Conversas</Link>
           </li>
         </ul>
       </div>
       <div className="general-section">
-        <h5>General</h5>
+        <h5>Geral</h5>
         <ul>
         <li className={currentTab === '/updates' ? 'active' : ''}>
-            <Link to="/updates" onClick={() => setCurrentTab('/updates')}>Updates</Link>
+            <Link to="/updates" onClick={() => setCurrentTab('/updates')}>Novidades</Link>
           </li>
           <li className={currentTab === '/account' ? 'active' : ''}>
-            <Link to="/account" onClick={() => setCurrentTab('/account')}>Setting</Link>
+            <Link to="/account" onClick={() => setCurrentTab('/account')}>Configuração</Link>
           </li>
         </ul>
       </div>

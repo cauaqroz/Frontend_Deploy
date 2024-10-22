@@ -11,8 +11,11 @@
     margin-left: 200px; /* Ajuste conforme a largura da sua sidebar */
     position: relative; /* Necessário para o posicionamento absoluto do payments-card */
     flex-grow: 1; /* Permitir que o container ocupe o espaço restante */
+    transition: margin-left 0.3s;
 }
-
+.container-projects.sidebar-hidden {
+    margin-left: 0; /* Remova a margem quando a sidebar não estiver visível */
+}
 .projects-content {
     display: flex;
     flex-direction: column; /* Alinhar os feeds em coluna */
@@ -20,6 +23,10 @@
     margin-left: 33px; /* Ajuste conforme a largura da sua sidebar */
     position: relative; /* Necessário para o posicionamento absoluto do payments-card */
     flex-grow: 1; /* Permitir que o conteúdo ocupe o espaço restante */
+}
+
+.projects-content.sidebar-hidden {
+    margin-left: 0; /* Remova a margem quando a sidebar não estiver visível */
 }
 
 .projects-feed {
@@ -204,3 +211,153 @@
     object-fit: cover;
     border-radius: 8px;
 }
+.configuracoes-container {
+    padding: 20px;
+    background-color: #f9f9f900;
+    border-radius: 8px;
+    max-width: 600px;
+    margin-left: 20px; /* Alinhado à esquerda */
+  }
+  
+  .configuracoes-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .form-group textarea {
+    resize: vertical;
+  }
+  
+  .form-buttons {
+    display: flex;
+    gap: 10px; /* Espaçamento entre os botões */
+    margin-top: 10px;
+  }
+  
+  .btn-cancel,
+  .btn-submit,
+  .btn-delete {
+    padding: 5px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+
+  }
+  
+  .btn-cancel {
+    background-color: #cccccc00;
+    color: #000;
+    border: 1px solid black;
+  }
+  
+  .btn-cancel:hover {
+    background-color: #aaa;
+  }
+  
+  .btn-submit {
+    background-color: #1642bb;
+    color: #fff;
+    padding: 7px 20px !important;
+  }
+  
+  .btn-submit:hover {
+    background-color: #0056b3;
+  }
+  
+  .btn-delete {
+    background-color: red;
+    color: #fff;
+    margin-top: 20px; /* Espaçamento acima do botão deletar */
+    /* diminuir a largura do botao */
+    padding: 7px 30px !important;
+  }
+  
+  .btn-delete:hover {
+    background-color: darkred;
+  }
+
+  .solicitacoes-card {
+    padding: 0px;
+    background-color: #f9f9f900;
+    border-radius: 8px;
+    max-width: 600px;
+    margin-left: -12px;
+    margin-top: -26px;
+  }
+  
+  .solicitacao-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #959595;
+    margin-left: 85px;
+    border-radius: 14px;
+    margin-top: 30px;
+  }
+  
+  .solicitacao-buttons {
+    display: flex;
+    gap: 5px; /* Espaçamento entre os botões */
+  }
+  
+  .btn-approve,
+  .btn-reject {
+    padding: 6px 24px;
+    border: none;
+    border-radius: 11px;
+    cursor: pointer;
+    font-size: 15px;
+    flex: 1 1;
+  }
+  
+  .btn-approve {
+    background-color: #1642bb;
+    color: #fff;
+  }
+  
+  .btn-approve:hover {
+    background-color: #0056b3;
+  }
+  
+  .btn-reject {
+    background-color: #cccccc00;
+    color: #ff0000;
+    border: 1px solid black;
+  }
+  
+  .btn-reject:hover {
+    background-color: #aaa;
+  }
+
+  
+/* Media Queries para Responsividade */
+@media (max-width: 768px) {
+    .projects-grid {
+        display: flex;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        width: 100%;
+        flex-direction: column;
+    }
+  }

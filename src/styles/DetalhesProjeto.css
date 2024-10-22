@@ -5,6 +5,7 @@
   align-items: flex-start; /* Alinhar ao início */
   padding: 20px;
   margin-top: 60px; /* Ajuste para compensar o header fixo */
+  transition: margin-left 0.3s;
 }
 
 /* Estilos para os detalhes do projeto */

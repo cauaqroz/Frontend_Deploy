@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import defaultImage from '../assets/baixados.png';
+import defaultImage from '../assets/baixados.png'; // Importe a imagem
 import config from '../config/Config';
 
 const Projeto = () => {
@@ -31,7 +31,7 @@ const Projeto = () => {
       {projetos.map(projeto => (
         <div key={projeto.id} style={{ border: '1px solid #ccc', padding: '16px', margin: '16px 0' }}>
           <img 
-            src={projeto.capaUrl ? `${config.LocalApi}/${projeto.id}/capa` : defaultImage} 
+            src={projeto.capaUrl ? `${config.LocalApi}/projetos/${projeto.id}/capa` : defaultImage} 
             alt="Capa do Projeto" 
             style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px' }} 
           />
