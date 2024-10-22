@@ -4,6 +4,7 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import Loading from '../components/Loading'; // Importe o componente de tela de carregamento
 import '../styles/NewProject.css'; // Importe o CSS para estilizar a página
+import config from '../config/Config';
 
 const NewProject = () => {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ const NewProject = () => {
       }
 
       // Lógica para enviar os dados do projeto para o backend
-      const response = await fetch('http://localhost:2216/projetos', {
+      const response = await fetch(`${config.LocalApi}/projetos`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,7 +69,7 @@ const NewProject = () => {
         const formData = new FormData();
         formData.append('file', projectData.image);
 
-        await fetch(`http://localhost:2216/projetos/${projectId}/uploadCapa`, {
+        await fetch(`${config.LocalApi}/projetos/${projectId}/uploadCapa`, {
           method: 'POST',
           body: formData,
         });
