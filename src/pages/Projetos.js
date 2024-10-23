@@ -208,9 +208,9 @@ const Projetos = () => {
 
   const enviarMensagem = async () => {
     if (novaMensagem.trim() === '') return;
-
+  
     console.log('Enviando mensagem:', novaMensagem);
-
+  
     try {
       const response = await fetch(`${config.LocalApi}/chat/${selectedProjeto.chatId}`, {
         method: 'POST',
@@ -223,23 +223,27 @@ const Projetos = () => {
           channelId: selectedProjeto.chatId // Adiciona o channelId ao corpo da requisição
         })
       });
-
+  
+      // Verificar se a resposta é bem-sucedida
+      if (!response.ok) {
+        throw new Error(`Erro na resposta do servidor: ${response.status} ${response.statusText}`);
+      }
+  
+      // Tentar analisar o JSON da resposta
       const responseData = await response.json();
       console.log('Resposta do servidor:', responseData);
-
-      if (response.ok) {
-        console.log('Mensagem enviada com sucesso');
-        setNovaMensagem('');
-        fetch(`${config.LocalApi}/chat/${selectedProjeto.chatId}/messages`)
-          .then(response => response.json())
-          .then(data => setMensagens(data));
-      } else {
-        console.error('Erro ao enviar mensagem:', response.statusText);
-      }
+  
+      // Atualizar a interface do usuário com a nova mensagem
+      // Supondo que você tenha um estado para armazenar as mensagens
+      setMensagens((prevMensagens) => [...prevMensagens, responseData]);
+  
+      // Limpar o campo de entrada de mensagem
+      setNovaMensagem('');
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
+      alert('Erro ao enviar mensagem: ' + error.message);
     }
-};
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
