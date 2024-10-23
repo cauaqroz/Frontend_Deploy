@@ -208,9 +208,9 @@ const Projetos = () => {
 
   const enviarMensagem = async () => {
     if (novaMensagem.trim() === '') return;
-
+  
     console.log('Enviando mensagem:', novaMensagem);
-
+  
     try {
       const response = await fetch(`${config.LocalApi}/chat/${selectedProjeto.chatId}`, {
         method: 'POST',
@@ -222,19 +222,20 @@ const Projetos = () => {
           sender: user.id
         })
       });
-
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Erro ao enviar mensagem: ${errorText}`);
+      }
+  
       const responseData = await response.json();
       console.log('Resposta do servidor:', responseData);
-
-      if (response.ok) {
-        console.log('Mensagem enviada com sucesso');
-        setNovaMensagem('');
-        fetch(`${config.LocalApi}/chat/${selectedProjeto.chatId}/messages`)
-          .then(response => response.json())
-          .then(data => setMensagens(data));
-      } else {
-        console.error('Erro ao enviar mensagem:', response.statusText);
-      }
+  
+      console.log('Mensagem enviada com sucesso');
+      setNovaMensagem('');
+      fetch(`${config.LocalApi}/chat/${selectedProjeto.chatId}/messages`)
+        .then(response => response.json())
+        .then(data => setMensagens(data));
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
     }
