@@ -219,7 +219,8 @@ const Projetos = () => {
         },
         body: JSON.stringify({
           content: novaMensagem,
-          sender: user.id
+          sender: user.id,
+          channelId: selectedProjeto.chatId // Adiciona o channelId ao corpo da requisição
         })
       });
 
@@ -238,7 +239,7 @@ const Projetos = () => {
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
     }
-  };
+};
 
   const renderTabContent = () => {
     switch (activeTab) {
