@@ -241,7 +241,6 @@ const Projetos = () => {
       setNovaMensagem('');
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
-      alert('Erro ao enviar mensagem: ' + error.message);
     }
   };
 
