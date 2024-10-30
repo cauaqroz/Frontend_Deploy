@@ -126,9 +126,12 @@ const Projetos = () => {
 
   const enviarMensagem = async () => {
     if (novaMensagem.trim() === '') return;
-
+  
     console.log('Enviando mensagem:', novaMensagem);
-
+  
+    // Limpar o campo de entrada de mensagem imediatamente
+    setNovaMensagem('');
+  
     try {
       const response = await fetch(`${config.LocalApi}/chat/${selectedProjeto.chatId}`, {
         method: 'POST',
@@ -141,20 +144,18 @@ const Projetos = () => {
           channelId: selectedProjeto.chatId
         })
       });
-
+  
       if (!response.ok) {
         throw new Error(`Erro na resposta do servidor: ${response.status} ${response.statusText}`);
       }
-
-      const responseData = await response.json().catch(() => {
-        throw new Error('Resposta do servidor não é um JSON válido');
-      });
+  
+      // A resposta já é um objeto JavaScript válido
+      const responseData = await response.json();
       console.log('Resposta do servidor:', responseData);
-
+  
       setMensagens((prevMensagens) => [...prevMensagens, responseData]);
-
-      // Limpar o campo de entrada de mensagem
-      setNovaMensagem('');
+  
+      console.log('Mensagem enviada com sucesso');
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
     }
