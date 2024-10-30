@@ -126,46 +126,37 @@ const Projetos = () => {
 
   const enviarMensagem = async () => {
     if (novaMensagem.trim() === '') return;
-  
+
     console.log('Enviando mensagem:', novaMensagem);
-  
+
     try {
-      const response = await fetch(`${config.LocalApi}/chat/${selectedProjeto.chatId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          content: novaMensagem,
-          sender: user.id,
-          channelId: selectedProjeto.chatId
-        })
-      });
-  
-      // Verificar se a resposta é um objeto
-      const responseData = await response.text();
-      let parsedResponse;
-      try {
-        parsedResponse = JSON.parse(responseData);
-      } catch (e) {
-        parsedResponse = responseData;
-      }
-  
-      console.log('Resposta do servidor:', parsedResponse);
-  
-      if (response.ok) {
-        console.log('Mensagem enviada com sucesso');
-        setNovaMensagem('');
-        fetch(`${config.LocalApi}/chat/${selectedProjeto.chatId}/messages`)
-          .then(response => response.json())
-          .then(data => setMensagens(data));
-      } else {
-        console.error('Erro ao enviar mensagem:', response.statusText);
-      }
+        const response = await fetch(`${config.LocalApi}/chat/${selectedProjeto.chatId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                content: novaMensagem,
+                sender: user.id,
+                channelId: selectedProjeto.chatId
+            })
+        });
+
+        if (response.ok) {
+            const responseData = await response.json();
+            console.log('Resposta do servidor:', responseData);
+            console.log('Mensagem enviada com sucesso');
+            setNovaMensagem('');
+            fetch(`${config.LocalApi}/chat/${selectedProjeto.chatId}/messages`)
+                .then(response => response.json())
+                .then(data => setMensagens(data));
+        } else {
+            console.error('Erro ao enviar mensagem:', response.statusText);
+        }
     } catch (error) {
-      console.error('Erro ao enviar mensagem:', error);
+        console.error('Erro ao enviar mensagem:', error);
     }
-  };
+};
 
   const renderTabContent = () => {
     switch (activeTab) {
