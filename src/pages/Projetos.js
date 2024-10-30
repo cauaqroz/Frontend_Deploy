@@ -230,11 +230,12 @@ const Projetos = () => {
       }
   
       // Tentar analisar o JSON da resposta
-      const responseData = await response.json();
+      const responseData = await response.json().catch(() => {
+        throw new Error('Resposta do servidor não é um JSON válido');
+      });
       console.log('Resposta do servidor:', responseData);
   
       // Atualizar a interface do usuário com a nova mensagem
-      // Supondo que você tenha um estado para armazenar as mensagens
       setMensagens((prevMensagens) => [...prevMensagens, responseData]);
   
       // Limpar o campo de entrada de mensagem
