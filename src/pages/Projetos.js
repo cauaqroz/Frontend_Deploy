@@ -129,9 +129,6 @@ const Projetos = () => {
   
     console.log('Enviando mensagem:', novaMensagem);
   
-    // Limpar o campo de entrada de mensagem imediatamente
-    setNovaMensagem('');
-  
     try {
       const response = await fetch(`${config.LocalApi}/chat/${selectedProjeto.chatId}`, {
         method: 'POST',
@@ -145,17 +142,26 @@ const Projetos = () => {
         })
       });
   
-      if (!response.ok) {
-        throw new Error(`Erro na resposta do servidor: ${response.status} ${response.statusText}`);
+      // Verificar se a resposta é um objeto
+      const responseData = await response.text();
+      let parsedResponse;
+      try {
+        parsedResponse = JSON.parse(responseData);
+      } catch (e) {
+        parsedResponse = responseData;
       }
   
-      // A resposta já é um objeto JavaScript válido
-      const responseData = await response.json();
-      console.log('Resposta do servidor:', responseData);
+      console.log('Resposta do servidor:', parsedResponse);
   
-      setMensagens((prevMensagens) => [...prevMensagens, responseData]);
-  
-      console.log('Mensagem enviada com sucesso');
+      if (response.ok) {
+        console.log('Mensagem enviada com sucesso');
+        setNovaMensagem('');
+        fetch(`${config.LocalApi}/chat/${selectedProjeto.chatId}/messages`)
+          .then(response => response.json())
+          .then(data => setMensagens(data));
+      } else {
+        console.error('Erro ao enviar mensagem:', response.statusText);
+      }
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
     }
